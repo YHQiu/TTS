@@ -1,4 +1,4 @@
-name: vocoder-tests
+name: vocoder-tests_all
 
 on:
   push:
@@ -44,5 +44,5 @@ jobs:
         run: |
           python3 -m pip install .[all]
           python3 setup.py egg_info
-      - name: Unit tests
+      - name: Unit tests_all
         run: make test_vocoder

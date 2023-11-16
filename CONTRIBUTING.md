@@ -79,7 +79,7 @@ The following steps are tested on an Ubuntu system.
 
     ```bash
     $ make test  # stop at the first error
-    $ make test_all  # run all the tests, report all the errors
+    $ make test_all  # run all the tests_all, report all the errors
     ```
 
 9. Format your code. We use ```black``` for code and ```isort``` for ```import``` formatting.

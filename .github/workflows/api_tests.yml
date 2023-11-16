@@ -47,7 +47,7 @@ jobs:
         run: |
           python3 -m pip install .[all]
           python3 setup.py egg_info
-      - name: Unit tests
+      - name: Unit tests_all
         run: make api_tests
         env:
           COQUI_STUDIO_TOKEN: ${{ secrets.COQUI_STUDIO_TOKEN }}

@@ -167,7 +167,7 @@ class TTS(nn.Module):
             model_name (str): Model name to load. You can list models by ```tts.models```.
             gpu (bool, optional): Enable/disable GPU. Some models might be too slow on CPU. Defaults to False.
 
-        TODO: Add tests
+        TODO: Add tests_all
         """
         self.synthesizer = None
         self.csapi = None

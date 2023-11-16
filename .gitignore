@@ -138,8 +138,8 @@ VCTK-Corpus-removed-silence/*
 trainer_*_log.txt
 
 # files used internally for dev, test etc.
-tests/outputs/*
-tests/train_outputs/*
+tests_all/outputs/*
+tests_all/train_outputs/*
 TODO.txt
 .vscode/*
 data/*
