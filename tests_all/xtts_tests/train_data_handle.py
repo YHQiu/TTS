@@ -1,3 +1,4 @@
+import concurrent.futures
 import os
 import csv
 import librosa
@@ -10,6 +11,17 @@ from tqdm import tqdm
 def convert_flac_to_wav(flac_file, output_path):
     y, sr = librosa.load(flac_file, sr=None)
     sf.write(output_path, y, sr)
+
+def process_entry(entrie, flac_path, output_folder, wav_file_name, sr):
+    y, _ = librosa.load(flac_path, sr=sr)
+    start_sample = int(entrie.start * sr)
+    end_sample = int(entrie.end * sr)
+    audio_segment = y[start_sample:end_sample]
+
+    segment_output_path = os.path.join(output_folder, 'wavs', f"{wav_file_name.split('.')[0]}_{start_sample}_{end_sample}.wav")
+    sf.write(segment_output_path, audio_segment, sr)
+
+    return f"{wav_file_name.split('.')[0]}_{start_sample}_{end_sample}", entrie.label
 
 
 def process_data(input_folder, output_folder):
@@ -27,38 +39,38 @@ def process_data(input_folder, output_folder):
             processed_records = set(f.read().splitlines())
 
     new_records = []
-    for root, _, files in os.walk(input_folder):
-        for file in tqdm(files, desc='Processing files', unit='file'):
-            if file.endswith('.flac') and file not in processed_records:
-                flac_path = os.path.join(root, file)
-                wav_file_name = file.replace('.flac', '.wav')
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for root, _, files in os.walk(input_folder):
 
-                text_file = file.replace('.flac', '.TextGrid')
-                text_path = os.path.join(root, 'TextGrid', text_file)
-                text_path = text_path.replace("/wav", "")
-                text_path = text_path.replace("\\wav", "")
+            for file in tqdm(files, desc='Processing files', unit='file'):
+                if file.endswith('.flac') and file not in processed_records:
 
-                # Read TextGrid file to extract intervals
-                tg = textgrid.openTextgrid(text_path, False)
-                # 获取标注层信息
-                tiers = tg.tiers
-                # max_size = 2
-                for tier in tqdm(tiers, desc='Processing tiers', unit='tier'):
-                    for entrie in tqdm(tier.entries, desc='Processing entries', unit='entrie'):
-                        # if max_size <0:
-                        #     break
-                        y, sr = librosa.load(flac_path, sr=None)
-                        start_sample = int(entrie.start * sr)
-                        end_sample = int(entrie.end * sr)
-                        audio_segment = y[start_sample:end_sample]
+                    flac_path = os.path.join(root, file)
+                    wav_file_name = file.replace('.flac', '.wav')
 
-                        segment_output_path = os.path.join(output_folder, 'wavs',
-                                                           f"{wav_file_name.split('.')[0]}_{start_sample}_{end_sample}.wav")
-                        sf.write(segment_output_path, audio_segment, sr)
+                    text_file = file.replace('.flac', '.TextGrid')
+                    text_path = os.path.join(root, 'TextGrid', text_file)
+                    text_path = text_path.replace("/wav", "")
+                    text_path = text_path.replace("\\wav", "")
 
-                        new_records.append((f"{wav_file_name.split('.')[0]}_{start_sample}_{end_sample}", entrie.label))
-                        # max_size-=1
-                processed_records.add(file)
+                    y, sr = librosa.load(flac_path, sr=None)
+
+                    # Read TextGrid file to extract intervals
+                    tg = textgrid.openTextgrid(text_path, False)
+                    # 获取标注层信息
+                    tiers = tg.tiers
+                    for tier in tqdm(tiers, desc='Processing tiers', unit='tier'):
+                        # max1 = 10
+                        for entrie in tqdm(tier.entries, desc='Processing entries', unit='entrie'):
+                            # if max1 < 0: break
+                            futures.append(executor.submit(process_entry, entrie, flac_path, output_folder, wav_file_name, sr))
+                            # max1 -= 1
+
+                    processed_records.add(file)
+
+        for future in concurrent.futures.as_completed(futures):
+            new_records.append(future.result())
 
     with open(processed_records_file, 'a') as f:
         for record in processed_records:
