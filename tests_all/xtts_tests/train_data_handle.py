@@ -72,15 +72,18 @@ def process_data(input_folder, output_folder):
         for future in concurrent.futures.as_completed(futures):
             new_records.append(future.result())
 
+    print("start write processed_records_file")
     with open(processed_records_file, 'a') as f:
         for record in processed_records:
             f.write(record + '\n')
+    print("end write processed_records_file")
 
+    print("start write csvfile")
     with open(os.path.join(output_folder, 'metadata.csv'), 'a', newline='', encoding='utf-8') as csvfile:
         csv_writer = csv.writer(csvfile, delimiter='|')
         for record in new_records:
             csv_writer.writerow(record)
-
+    print("end write csvfile")
 
 def main():
     parser = argparse.ArgumentParser(description='Process audio and text data')
