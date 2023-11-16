@@ -1,9 +1,10 @@
 import os
 import shutil
+import sys
 
 import torch
 from trainer import Trainer, TrainerArgs
-
+sys.path.append('../../tests_all')
 from tests_all import get_tests_output_path
 from TTS.config.shared_configs import BaseDatasetConfig
 from TTS.tts.datasets import load_tts_samples
