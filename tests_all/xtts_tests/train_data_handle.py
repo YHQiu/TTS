@@ -42,11 +42,11 @@ def process_data(input_folder, output_folder):
                 tg = textgrid.openTextgrid(text_path, False)
                 # 获取标注层信息
                 tiers = tg.tiers
-                max_size = 2
+                # max_size = 2
                 for tier in tqdm(tiers, desc='Processing tiers', unit='tier'):
                     for entrie in tqdm(tier.entries, desc='Processing entries', unit='entrie'):
-                        if max_size <0:
-                            break
+                        # if max_size <0:
+                        #     break
                         y, sr = librosa.load(flac_path, sr=None)
                         start_sample = int(entrie.start * sr)
                         end_sample = int(entrie.end * sr)
@@ -57,7 +57,7 @@ def process_data(input_folder, output_folder):
                         sf.write(segment_output_path, audio_segment, sr)
 
                         new_records.append((f"{wav_file_name.split('.')[0]}_{start_sample}_{end_sample}", entrie.label))
-                        max_size-=1
+                        # max_size-=1
                 processed_records.add(file)
 
     with open(processed_records_file, 'a') as f:
