@@ -40,10 +40,9 @@ def process_data(input_folder, output_folder):
 
     new_records = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
         for root, _, files in os.walk(input_folder):
-
             for file in tqdm(files, desc='Processing files', unit='file'):
+                futures = []
                 if file.endswith('.flac') and file not in processed_records:
 
                     flac_path = os.path.join(root, file)
@@ -69,8 +68,8 @@ def process_data(input_folder, output_folder):
 
                     processed_records.add(file)
 
-        for future in concurrent.futures.as_completed(futures):
-            new_records.append(future.result())
+                for future in concurrent.futures.as_completed(futures):
+                    new_records.append(future.result())
 
     print("start write processed_records_file")
     with open(processed_records_file, 'a') as f:
