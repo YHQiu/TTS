@@ -34,6 +34,7 @@ def process_data(input_folder, output_folder):
 
                 text_file = file.replace('.flac', '.TextGrid')
                 text_path = os.path.join(root, 'TextGrid', text_file)
+                text_path = text_path.replace("/wav", "")
 
                 with open(text_path, 'r') as text_file:
                     speech_text = text_file.read().replace('\n', '|')
