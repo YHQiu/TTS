@@ -56,10 +56,6 @@ def train_model(train_config):
                     speaker_wav_path = os.path.join(DATASET_WAV_PATH, wav_file_name)
                     SPEAKER_REFERENCE.append(speaker_wav_path)
                     added_speakers.add(speaker_id)
-
-                full_wav_file_name = '_'.join(file_info[:4])  # 获取完整的文件名
-                full_wav_file_path = os.path.join(DATASET_WAV_PATH, f"{full_wav_file_name}.wav")
-                SPEAKER_REFERENCE.append(full_wav_file_path)
     else:
         SPEAKER_REFERENCE = train_config.get("SPEAKER_REFERENCE")
 

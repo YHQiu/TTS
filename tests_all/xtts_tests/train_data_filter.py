@@ -1,15 +1,26 @@
-# import pandas as pd
-#
-# # 读取原始CSV文件
-# file_path = 'metadata.csv'  # 替换为你的文件路径
-# data = pd.read_csv(file_path, sep='|', header=None, names=['filename', 'text'])
-#
-# # 移除中文text超过81个字符的行
-# data['text_length'] = data['text'].apply(lambda x: len(str(x).strip()))  # 计算文本长度
-# data_filtered = data[data['text_length'] <= 81]  # 保留长度不超过81的文本行
-#
-# # 保存新的CSV文件
-# new_file_path = 'metadata_handle.csv'  # 新文件路径
-# data_filtered[['filename', 'text']].to_csv(new_file_path, sep='|', index=False, header=False)
+import os
+import pandas as pd
 
-print(len("享受这种快感，有人为什么说大家现在节奏都比较快，天天快来快去的，什么高那个高铁一直在提速，大家坐飞机就是因为咱们十五天并不那么赶时间，并不是要出差那样，大家也经常坐飞机，是比较皮"))
+# 读取原始CSV文件
+file_path = 'metadata.csv'  # 替换为你的文件路径
+data = pd.read_csv(file_path, sep='|', header=None, names=['filename', 'text'])
+
+# 移除中文text超过81个字符的行
+data['text_length'] = data['text'].apply(lambda x: len(str(x).strip()))  # 计算文本长度
+data_filtered = data[(data['text_length'] <= 82) & (data['text_length'] > 6)]  # 保留长度不超过81的文本行
+
+# 检查 wavs/ 目录下是否有对应的音频文件，如果没有则移除数据
+data_filtered['wav_exists'] = data_filtered['filename'].apply(lambda x: os.path.exists(f'wavs/{x}.wav'))
+data_filtered = data_filtered[data_filtered['wav_exists']]
+
+# 移除名称和问题数据匹配的行
+problematic_data = [
+    '20200707_L_R001S01C01_16734911_16738564',
+    '20200707_L_R001S01C01_16734911_16738564',  # 如果这是重复数据，可以删除其中一个
+    '20200707_L_R001S08C01_19336752_19519388'
+]
+data_filtered = data_filtered[~data_filtered['filename'].isin(problematic_data)]
+
+# 保存新的CSV文件
+new_file_path = 'metadata_handle.csv'  # 新文件路径
+data_filtered[['filename', 'text']].to_csv(new_file_path, sep='|', index=False, header=False)
