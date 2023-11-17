@@ -158,10 +158,11 @@ class XTTSDataset(torch.utils.data.Dataset):
         # try to load the sample, if fails added it to the failed samples list
         try:
             tseq, audiopath, wav, cond, cond_len, cond_idxs = self.load_item(sample)
-        except:
+        except Exception as e:
             if self.debug_failures:
                 print(f"error loading {sample['audio_file']} {sys.exc_info()}")
             self.failed_samples.add(sample_id)
+            print(f"Exception {e}")
             return self[1]
 
         # check if the audio and text size limits and if it out of the limits, added it failed_samples
