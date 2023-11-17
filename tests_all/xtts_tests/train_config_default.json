@@ -8,8 +8,8 @@
     "BATCH_SIZE": 2,
     "GRAD_ACUMM_STEPS": 1,
     "DATASET_PATH": "../data/ljspeech/",
-    "TRAIN_CSV": "../data/ljspeech/metadata.csv",
-    "TEST_CSV": "../data/ljspeech/metadata.csv",
+    "TRAIN_CSV": "metadata.csv",
+    "TEST_CSV": "metadata.csv",
     "SPEAKER_REFERENCE": [
         "../data/ljspeech/wavs/LJ001-0002.wav"
     ],
