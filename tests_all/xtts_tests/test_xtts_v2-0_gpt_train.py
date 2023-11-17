@@ -112,7 +112,7 @@ def train_model(train_config):
         min_conditioning_length=66150,  # 3 secs
         debug_loading_failures=False,
         max_wav_length=255995,  # ~11.6 seconds
-        max_text_length=200,
+        max_text_length = 86 if LANGUAGE == 'zh-cn' else 200,
         mel_norm_file=MEL_NORM_FILE,
         dvae_checkpoint=DVAE_CHECKPOINT,
         xtts_checkpoint=XTTS_CHECKPOINT,  # checkpoint path of the model that you want to fine-tune
@@ -163,7 +163,7 @@ def train_model(train_config):
         lr_scheduler_params={"milestones": [50000 * 18, 150000 * 18, 300000 * 18], "gamma": 0.5, "last_epoch": -1},
         test_sentences=[
             {
-                "text": "This cake is great. It's so delicious and moist.",
+                "text": "看起来报错信息显示有 3 个活动的 GPU，并建议使用 CUDA_VISIBLE_DEVICES 来定义目标 GPU。您设置了 CUDA_VISIBLE_DEVICES 环境变量，但可能还需要确认是否正确设置了只使用一个 GPU。",
                 "speaker_wav": SPEAKER_REFERENCE,
                 "language": LANGUAGE,
             },
