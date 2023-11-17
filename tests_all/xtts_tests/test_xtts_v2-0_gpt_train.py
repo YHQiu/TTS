@@ -80,7 +80,7 @@ def train_model(train_config):
             full_wav_file_path = os.path.join(DATASET_WAV_PATH, f"{full_wav_file_name}.wav")
             SPEAKER_REFERENCE.append(full_wav_file_path)
 
-    print(SPEAKER_REFERENCE)
+    print(SPEAKER_REFERENCE[0])
 
     config_dataset = BaseDatasetConfig(
         formatter=DATASET_FORMATTER,
