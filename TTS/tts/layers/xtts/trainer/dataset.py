@@ -96,6 +96,10 @@ class XTTSDataset(torch.utils.data.Dataset):
         print(" > Total eval samples after filtering:", len(self.samples))
 
     def get_text(self, text, lang):
+        if text is not None and len(text) > 82:
+            print(text)
+        elif text is not None:
+            print(f"success {lang}")
         tokens = self.tokenizer.encode(text, lang)
         tokens = torch.IntTensor(tokens)
         assert not torch.any(tokens == 1), f"UNK token found in {text} -> {self.tokenizer.decode(tokens)}"
@@ -113,11 +117,6 @@ class XTTSDataset(torch.utils.data.Dataset):
         if wav is None or wav.shape[-1] < (0.5 * self.sample_rate):
             # Ultra short clips are also useless (and can cause problems within some models).
             raise ValueError
-
-        if len(text) > 82:
-            print(text)
-        else:
-            print("success")
 
         if self.use_masking_gt_prompt_approach:
             # get a slice from GT to condition the model
