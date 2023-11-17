@@ -201,6 +201,14 @@ if __name__ == "__main__":
 
     # 设置要使用的GPU
     # 获取CUDA_VISIBLE_DEVICES环境变量的值
+    # 检查CUDA是否可用
+    if torch.cuda.is_available():
+        # 获取当前CUDA版本
+        cuda_version = torch.version.cuda
+        print(f"当前使用的CUDA版本为: {cuda_version}")
+    else:
+        print("CUDA 不可用")
+
     cuda_visible_devices = os.environ.get('CUDA_VISIBLE_DEVICES', '0')  # 默认为'0'
 
     # 将获取的值以逗号分隔拆分成一个GPU索引的列表

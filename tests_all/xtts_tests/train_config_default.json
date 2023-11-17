@@ -2,7 +2,7 @@
     "XTTS_CHECKPOINT": null,
     "LANGUAGE_BASE": "en",
     "EPOCHS": 1,
-    "OPTIMIZER_WD_ONLY_ON_WEIGHTS": true,
+    "OPTIMIZER_WD_ONLY_ON_WEIGHTS": false,
     "START_WITH_EVAL": false,
     "BATCH_GROUP_SIZE": 48,
     "BATCH_SIZE": 2,
