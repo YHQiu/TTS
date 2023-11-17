@@ -44,21 +44,24 @@ def train_model(train_config):
     os.makedirs(OUT_PATH, exist_ok=True)
 
     # 读取测试数据的发音人信息
-    with open(TEST_CSV, 'r') as file:
-        lines = file.readlines()
-        for line in lines:
-            parts = line.strip().split('|')
-            file_info = parts[0].split('_')
-            speaker_id = '_'.join(file_info[:3])  # 获取前三段信息，用于唯一标识发音人
-            if speaker_id not in added_speakers:
-                wav_file_name = f"{parts[0]}.wav"
-                speaker_wav_path = os.path.join(DATASET_WAV_PATH, wav_file_name)
-                SPEAKER_REFERENCE.append(speaker_wav_path)
-                added_speakers.add(speaker_id)
+    if train_config.get("SPEAKER_REFERENCE") is None:
+        with open(TEST_CSV, 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                parts = line.strip().split('|')
+                file_info = parts[0].split('_')
+                speaker_id = '_'.join(file_info[:3])  # 获取前三段信息，用于唯一标识发音人
+                if speaker_id not in added_speakers:
+                    wav_file_name = f"{parts[0]}.wav"
+                    speaker_wav_path = os.path.join(DATASET_WAV_PATH, wav_file_name)
+                    SPEAKER_REFERENCE.append(speaker_wav_path)
+                    added_speakers.add(speaker_id)
 
-            full_wav_file_name = '_'.join(file_info[:4])  # 获取完整的文件名
-            full_wav_file_path = os.path.join(DATASET_WAV_PATH, f"{full_wav_file_name}.wav")
-            SPEAKER_REFERENCE.append(full_wav_file_path)
+                full_wav_file_name = '_'.join(file_info[:4])  # 获取完整的文件名
+                full_wav_file_path = os.path.join(DATASET_WAV_PATH, f"{full_wav_file_name}.wav")
+                SPEAKER_REFERENCE.append(full_wav_file_path)
+    else:
+        SPEAKER_REFERENCE = train_config.get("SPEAKER_REFERENCE")
 
     print(SPEAKER_REFERENCE[0])
 
