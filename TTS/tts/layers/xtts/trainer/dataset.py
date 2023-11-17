@@ -114,6 +114,11 @@ class XTTSDataset(torch.utils.data.Dataset):
             # Ultra short clips are also useless (and can cause problems within some models).
             raise ValueError
 
+        if len(text) > 82:
+            print(text)
+        else:
+            print("success")
+
         if self.use_masking_gt_prompt_approach:
             # get a slice from GT to condition the model
             cond, _, cond_idxs = get_prompt_slice(
