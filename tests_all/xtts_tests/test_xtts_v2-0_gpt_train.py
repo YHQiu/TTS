@@ -11,7 +11,7 @@ from TTS.tts.layers.xtts.dvae import DiscreteVAE
 from TTS.tts.layers.xtts.trainer.gpt_trainer import GPTArgs, GPTTrainer, GPTTrainerConfig, XttsAudioConfig
 
 # 设置要使用的GPU
-torch.cuda.set_device(0,1,2)  # 这里的0代表你想要使用的GPU索引
+torch.cuda.set_device("0,1,2")  # 这里的0代表你想要使用的GPU索引
 
 def train_model(train_config):
 
