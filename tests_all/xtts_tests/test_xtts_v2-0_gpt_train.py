@@ -60,7 +60,7 @@ def train_model(train_config):
     # 获取当前日期并以特定格式保存
     current_date = datetime.now().strftime("%Y%m%d_%H%M%S")
     # 更新路径中的日期部分
-    OUT_PATH = os.path.join(train_config.OUT_PATH, "train_outputs", current_date)
+    OUT_PATH = os.path.join(train_config.get("OUT_PATH"), "train_outputs", current_date)
     os.makedirs(OUT_PATH, exist_ok=True)
 
     # 读取测试数据的发音人信息
