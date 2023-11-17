@@ -173,9 +173,6 @@ def train_model(train_config):
         ],
     )
 
-    # init the model from config
-    model = GPTTrainer.init_from_config(config)
-
     # load training samples
     train_samples, eval_samples = load_tts_samples(
         DATASETS_CONFIG_LIST,
@@ -183,6 +180,9 @@ def train_model(train_config):
         eval_split_max_size=config.eval_split_max_size,
         eval_split_size=config.eval_split_size,
     )
+
+    # init the model from config
+    model = GPTTrainer.init_from_config(config)
 
     # init the trainer and 🚀
     trainer = Trainer(
@@ -208,26 +208,26 @@ if __name__ == "__main__":
     if torch.cuda.is_available():
         # 获取当前CUDA版本
         cuda_version = torch.version.cuda
+
+        cuda_visible_devices = os.environ.get('CUDA_VISIBLE_DEVICES', '0')  # 默认为'0'
+
+        # 将获取的值以逗号分隔拆分成一个GPU索引的列表
+        gpu_list = cuda_visible_devices.split(',')
+
+        # 循环遍历列表，设置每个GPU并启动你的代码
+        for gpu_index in gpu_list:
+            try:
+                gpu_idx = int(gpu_index)
+                torch.cuda.set_device(gpu_idx)
+                print(f"Use GPU Index {gpu_idx}")
+            except ValueError:
+                print(f"Invalid GPU index: {gpu_index}")
         print(f"当前使用的CUDA版本为: {cuda_version}")
     else:
         print("CUDA 不可用")
 
-    cuda_visible_devices = os.environ.get('CUDA_VISIBLE_DEVICES', '0')  # 默认为'0'
-
-    # 将获取的值以逗号分隔拆分成一个GPU索引的列表
-    gpu_list = cuda_visible_devices.split(',')
-
-    # 循环遍历列表，设置每个GPU并启动你的代码
-    for gpu_index in gpu_list:
-        try:
-            gpu_idx = int(gpu_index)
-            torch.cuda.set_device(gpu_idx)
-            print(f"Use GPU Index {gpu_idx}")
-        except ValueError:
-            print(f"Invalid GPU index: {gpu_index}")
-
     parser = argparse.ArgumentParser(description='Train model with specified configuration')
-    parser.add_argument('--train-config-path', required=False, default="train_config.json", help='Path to train_config.json')
+    parser.add_argument('--train-config-path', required=False, default="train_config_default.json", help='Path to train_config.json')
     args = parser.parse_args()
 
     config_path = args.train_config_path

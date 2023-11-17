@@ -9,5 +9,5 @@ data['text_length'] = data['text'].apply(lambda x: len(str(x).strip()))  # 计�
 data_filtered = data[data['text_length'] <= 81]  # 保留长度不超过81的文本行
 
 # 保存新的CSV文件
-new_file_path = 'meta_handle.csv'  # 新文件路径
+new_file_path = 'metadata_handle.csv'  # 新文件路径
 data_filtered[['filename', 'text']].to_csv(new_file_path, sep='|', index=False, header=False)

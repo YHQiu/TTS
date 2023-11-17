@@ -1,6 +1,6 @@
 {
     "XTTS_CHECKPOINT": null,
-    "LANGUAGE_BASE": "en",
+    "LANGUAGE_BASE": "zh-cn",
     "EPOCHS": 1,
     "OPTIMIZER_WD_ONLY_ON_WEIGHTS": false,
     "START_WITH_EVAL": false,
@@ -8,8 +8,8 @@
     "BATCH_SIZE": 2,
     "GRAD_ACUMM_STEPS": 1,
     "DATASET_PATH": "../data/ljspeech/",
-    "TRAIN_CSV": "metadata.csv",
-    "TEST_CSV": "metadata.csv",
+    "TRAIN_CSV": "metadata-zh.csv",
+    "TEST_CSV": "metadata-zh.csv",
     "SPEAKER_REFERENCE": [
         "../data/ljspeech/wavs/LJ001-0002.wav"
     ],
