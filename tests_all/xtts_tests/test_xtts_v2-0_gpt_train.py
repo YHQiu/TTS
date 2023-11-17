@@ -115,7 +115,7 @@ def train_model(train_config):
         min_conditioning_length=66150,  # 3 secs
         debug_loading_failures=False,
         max_wav_length=255995,  # ~11.6 seconds
-        max_text_length = 82 if LANGUAGE == 'zh-cn' else 200,
+        max_text_length = 81 if LANGUAGE == 'zh-cn' else 200,
         mel_norm_file=MEL_NORM_FILE,
         dvae_checkpoint=DVAE_CHECKPOINT,
         xtts_checkpoint=XTTS_CHECKPOINT,  # checkpoint path of the model that you want to fine-tune
