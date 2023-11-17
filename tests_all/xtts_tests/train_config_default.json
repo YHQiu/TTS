@@ -1,0 +1,19 @@
+{
+    "XTTS_CHECKPOINT": null,
+    "LANGUAGE_BASE": "en",
+    "EPOCHS": 1,
+    "OPTIMIZER_WD_ONLY_ON_WEIGHTS": true,
+    "START_WITH_EVAL": false,
+    "BATCH_GROUP_SIZE": 48,
+    "BATCH_SIZE": 2,
+    "GRAD_ACUMM_STEPS": 1,
+    "DATASET_PATH": "../data/ljspeech/",
+    "TRAIN_CSV": "metadata.csv",
+    "TEST_CSV": "metadata.csv",
+    "SPEAKER_REFERENCE": [
+        "../data/ljspeech/wavs/LJ001-0002.wav"
+    ],
+    "DATASET_FORMATTER": "ljspeech",
+    "DATASET_NAME": "ljspeech",
+    "OUT_PATH": "/data/model/xtts/test_output"
+}

@@ -1,4 +1,7 @@
+import argparse
+import json
 import os
+from datetime import datetime
 
 import torch
 from trainer import Trainer, TrainerArgs
@@ -7,32 +10,64 @@ from TTS.tts.datasets import load_tts_samples
 from TTS.tts.layers.xtts.dvae import DiscreteVAE
 from TTS.tts.layers.xtts.trainer.gpt_trainer import GPTArgs, GPTTrainer, GPTTrainerConfig, XttsAudioConfig
 
-XTTS_CHECKPOINT = "C:\\Users\\Administrator\\AppData\\Local\\tts\\tts_models--multilingual--multi-dataset--xtts_v2\\model.pth"  # "/raid/edresson/dev/Checkpoints/XTTS_evaluation/xtts_style_emb_repetition_fix_gt/132500_gpt_ema_coqui_tts_with_enhanced_hifigan.pth"  # model.pth file
-LANGUAGE_BASE = "zh-cn"
-# Training Parameters
-OPTIMIZER_WD_ONLY_ON_WEIGHTS = True  # for multi-gpu training please make it False
-START_WITH_EVAL = False  # if True it will star with evaluation
-BATCH_SIZE = 2  # set here the batch size
-GRAD_ACUMM_STEPS = 1  # set here the grad accumulation steps
+def train_model(train_config):
 
-def get_tests_output_path():
-    current_dir = os.path.abspath(os.path.dirname(__file__))  # 获取当前文件所在目录的绝对路径
-    two_levels_up = os.path.abspath(os.path.join(current_dir, "../"))  # 上上级目录的路径
-    return two_levels_up
+    XTTS_CHECKPOINT = train_config.XTTS_CHECKPOINT
+    LANGUAGE_BASE = train_config.LANGUAGE_BASE
+    # Training Parameters
+    EPOCHS = train_config.EPOCHS
+    OPTIMIZER_WD_ONLY_ON_WEIGHTS = train_config.OPTIMIZER_WD_ONLY_ON_WEIGHTS  # for multi-gpu training please make it False
+    START_WITH_EVAL = train_config.START_WITH_EVAL  # if True it will star with evaluation
+    BATCH_SIZE = train_config.BATCH_SIZE  # set here the batch size
+    BATCH_GROUP_SIZE = train_config.BATCH_GROUP_SIZE
+    GRAD_ACUMM_STEPS = train_config.GRAD_ACUMM_STEPS  # set here the grad accumulation steps
 
-# Training sentences generations
-SPEAKER_REFERENCE = [
-        f"{get_tests_output_path()}/data/ljspeech/wavs/LJ001-0002.wav"
-    ]  # speaker reference to be used in training test sentences
+    # DATA SET
+    DATASET_PATH = train_config.DATASET_PATH
+    DATASET_WAV_PATH = train_config.DATASET_WAV_PATH
+    TRAIN_CSV = train_config.TRAIN_CSV
+    TEST_CSV = train_config.TEST_CSV
 
-def train_model():
+    # DATA FORMATTER
+    DATASET_FORMATTER = train_config.DATASET_FORMATTER
+    DATASET_NAME = train_config.DATASET_NAME
+
+    # Training sentences generations
+    SPEAKER_REFERENCE = []
+    added_speakers = set()  # 用于记录已添加的发音人
+
+    # 输出文件路径
+    # 获取当前日期并以特定格式保存
+    current_date = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # 更新路径中的日期部分
+    OUT_PATH = os.path.join(train_config.OUT_PATH, "train_outputs", current_date)
+    os.makedirs(OUT_PATH, exist_ok=True)
+
+    # 读取测试数据的发音人信息
+    with open(TEST_CSV, 'r') as file:
+        lines = file.readlines()
+        for line in lines:
+            parts = line.strip().split('|')
+            file_info = parts[0].split('_')
+            speaker_id = '_'.join(file_info[:3])  # 获取前三段信息，用于唯一标识发音人
+            if speaker_id not in added_speakers:
+                wav_file_name = f"{parts[0]}.wav"
+                speaker_wav_path = os.path.join(DATASET_WAV_PATH, wav_file_name)
+                SPEAKER_REFERENCE.append(speaker_wav_path)
+                added_speakers.add(speaker_id)
+
+            full_wav_file_name = '_'.join(file_info[:4])  # 获取完整的文件名
+            full_wav_file_path = os.path.join(DATASET_WAV_PATH, f"{full_wav_file_name}.wav")
+            SPEAKER_REFERENCE.append(full_wav_file_path)
+
+    print(SPEAKER_REFERENCE)
 
     config_dataset = BaseDatasetConfig(
-        formatter="ljspeech",
-        dataset_name="ljspeech",
-        path=f"{get_tests_output_path()}/data/ljspeech/",
-        meta_file_train="metadata.csv",
-        meta_file_val="metadata.csv",
+        formatter=DATASET_FORMATTER,
+        dataset_name=DATASET_NAME,
+        path=DATASET_PATH,
+        meta_file_train=TRAIN_CSV,
+        meta_file_val=TEST_CSV,
         language=LANGUAGE_BASE,
     )
 
@@ -43,9 +78,6 @@ def train_model():
     PROJECT_NAME = "XTTS_trainer"
     DASHBOARD_LOGGER = "tensorboard"
     LOGGER_URI = None
-
-    OUT_PATH = os.path.join(get_tests_output_path(), "train_outputs", "xtts_tests")
-    os.makedirs(OUT_PATH, exist_ok=True)
 
     # Create DVAE checkpoint and mel_norms on test time
     # DVAE parameters: For the training we need the dvae to extract the dvae tokens, given that you must provide the paths for this model
@@ -92,10 +124,14 @@ def train_model():
         gpt_use_perceiver_resampler=True,
     )
 
+    # 读取模型配置文件
+    # with open("config.json", 'r') as model_config_file:
+    #     model_args = json.load(model_config_file)
+
     audio_config = XttsAudioConfig(sample_rate=22050, dvae_sample_rate=22050, output_sample_rate=24000)
 
     config = GPTTrainerConfig(
-        epochs=1,
+        epochs=EPOCHS,
         output_path=OUT_PATH,
         model_args=model_args,
         run_name=RUN_NAME,
@@ -105,7 +141,7 @@ def train_model():
         logger_uri=LOGGER_URI,
         audio=audio_config,
         batch_size=BATCH_SIZE,
-        batch_group_size=48,
+        batch_group_size=BATCH_GROUP_SIZE,
         eval_batch_size=BATCH_SIZE,
         num_loader_workers=8,
         eval_split_max_size=256,
@@ -150,7 +186,7 @@ def train_model():
         TrainerArgs(
             restore_path=None,  # xtts checkpoint is restored via xtts_checkpoint key so no need of restore it using Trainer restore_path parameter
             skip_train_epoch=False,
-            start_with_eval=True,
+            start_with_eval=START_WITH_EVAL,
             grad_accum_steps=GRAD_ACUMM_STEPS,
         ),
         config,
@@ -160,8 +196,18 @@ def train_model():
         eval_samples=eval_samples,
     )
     trainer.fit()
-    # remove output path
-    # shutil.rmtree(OUT_PATH)
 
 if __name__ == "__main__":
-    train_model()
+
+    parser = argparse.ArgumentParser(description='Train model with specified configuration')
+    parser.add_argument('--train-config-path', required=False, default="train_config.json", help='Path to train_config.json')
+    args = parser.parse_args()
+
+    config_path = args.train_config_path
+
+    # 从 train_config.json 中读取配置
+    with open(config_path, 'r') as config_file:
+        config = json.load(config_file)
+
+    # 将读取的配置传递给 train_model 函数
+    train_model(config)

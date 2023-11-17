@@ -2,6 +2,10 @@ import os
 import sys
 from pathlib import Path
 
+def get_tests_output_path():
+    current_dir = os.path.abspath(os.path.dirname(__file__))  # 获取当前文件所在目录的绝对路径
+    two_levels_up = os.path.abspath(os.path.join(current_dir, "../"))  # 上上级目录的路径
+    return two_levels_up
 
 def get_user_data_dir(appname):
     TTS_HOME = os.environ.get("TTS_HOME")
@@ -25,5 +29,5 @@ def get_user_data_dir(appname):
     return ans.joinpath(appname)
 
 if __name__ == "__main__":
-    model_path = get_user_data_dir("tts")
-    print(model_path)
+    print(get_user_data_dir("tts"))
+    print(get_tests_output_path())
