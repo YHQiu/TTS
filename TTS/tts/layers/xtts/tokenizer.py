@@ -121,6 +121,12 @@ _abbreviations = {
             # Chinese doesn't typically use abbreviations in the same way as Latin-based scripts.
         ]
     ],
+    "zh-cn": [
+        (re.compile("\\b%s\\." % x[0], re.IGNORECASE), x[1])
+        for x in [
+            # Chinese doesn't typically use abbreviations in the same way as Latin-based scripts.
+        ]
+    ],
     "cs": [
         (re.compile("\\b%s\\." % x[0], re.IGNORECASE), x[1])
         for x in [
@@ -281,6 +287,19 @@ _symbols_multilingual = {
         ]
     ],
     "zh": [
+        # Chinese
+        (re.compile(r"%s" % re.escape(x[0]), re.IGNORECASE), x[1])
+        for x in [
+            ("&", " 和 "),
+            ("@", " 在 "),
+            ("%", " 百分之 "),
+            ("#", " 号 "),
+            ("$", " 美元 "),
+            ("£", " 英镑 "),
+            ("°", " 度 "),
+        ]
+    ],
+    "zh-cn": [
         # Chinese
         (re.compile(r"%s" % re.escape(x[0]), re.IGNORECASE), x[1])
         for x in [
