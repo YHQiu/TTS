@@ -12,26 +12,6 @@ from TTS.tts.layers.xtts.trainer.gpt_trainer import GPTArgs, GPTTrainer, GPTTrai
 
 def train_model(train_config):
 
-    # XTTS_CHECKPOINT = train_config.XTTS_CHECKPOINT
-    # LANGUAGE_BASE = train_config.LANGUAGE_BASE
-    # # Training Parameters
-    # EPOCHS = train_config.EPOCHS
-    # OPTIMIZER_WD_ONLY_ON_WEIGHTS = train_config.OPTIMIZER_WD_ONLY_ON_WEIGHTS  # for multi-gpu training please make it False
-    # START_WITH_EVAL = train_config.START_WITH_EVAL  # if True it will star with evaluation
-    # BATCH_SIZE = train_config.BATCH_SIZE  # set here the batch size
-    # BATCH_GROUP_SIZE = train_config.BATCH_GROUP_SIZE
-    # GRAD_ACUMM_STEPS = train_config.GRAD_ACUMM_STEPS  # set here the grad accumulation steps
-    #
-    # # DATA SET
-    # DATASET_PATH = train_config.DATASET_PATH
-    # DATASET_WAV_PATH = train_config.DATASET_WAV_PATH
-    # TRAIN_CSV = train_config.TRAIN_CSV
-    # TEST_CSV = train_config.TEST_CSV
-    #
-    # # DATA FORMATTER
-    # DATASET_FORMATTER = train_config.DATASET_FORMATTER
-    # DATASET_NAME = train_config.DATASET_NAME
-
     XTTS_CHECKPOINT = train_config.get("XTTS_CHECKPOINT")
     LANGUAGE_BASE = train_config.get("LANGUAGE_BASE")
     # Training Parameters
@@ -214,6 +194,7 @@ def train_model(train_config):
         model=model,
         train_samples=train_samples,
         eval_samples=eval_samples,
+        gpu=0
     )
     trainer.fit()
 
