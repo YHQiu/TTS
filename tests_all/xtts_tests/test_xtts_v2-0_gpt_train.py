@@ -10,23 +10,6 @@ from TTS.tts.datasets import load_tts_samples
 from TTS.tts.layers.xtts.dvae import DiscreteVAE
 from TTS.tts.layers.xtts.trainer.gpt_trainer import GPTArgs, GPTTrainer, GPTTrainerConfig, XttsAudioConfig
 
-# 设置要使用的GPU
-# 获取CUDA_VISIBLE_DEVICES环境变量的值
-cuda_visible_devices = os.environ.get('CUDA_VISIBLE_DEVICES', '0')  # 默认为'0'
-
-# 将获取的值以逗号分隔拆分成一个GPU索引的列表
-gpu_list = cuda_visible_devices.split(',')
-
-# 循环遍历列表，设置每个GPU并启动你的代码
-for gpu_index in gpu_list:
-    try:
-        gpu_idx = int(gpu_index)
-        torch.cuda.set_device(gpu_idx)
-        # 这里添加你的训练代码
-        # ...
-    except ValueError:
-        print(f"Invalid GPU index: {gpu_index}")
-
 def train_model(train_config):
 
     # XTTS_CHECKPOINT = train_config.XTTS_CHECKPOINT
@@ -235,6 +218,23 @@ def train_model(train_config):
     trainer.fit()
 
 if __name__ == "__main__":
+
+    # 设置要使用的GPU
+    # 获取CUDA_VISIBLE_DEVICES环境变量的值
+    cuda_visible_devices = os.environ.get('CUDA_VISIBLE_DEVICES', '0')  # 默认为'0'
+
+    # 将获取的值以逗号分隔拆分成一个GPU索引的列表
+    gpu_list = cuda_visible_devices.split(',')
+
+    # 循环遍历列表，设置每个GPU并启动你的代码
+    for gpu_index in gpu_list:
+        try:
+            gpu_idx = int(gpu_index)
+            torch.cuda.set_device(gpu_idx)
+            # 这里添加你的训练代码
+            # ...
+        except ValueError:
+            print(f"Invalid GPU index: {gpu_index}")
 
     parser = argparse.ArgumentParser(description='Train model with specified configuration')
     parser.add_argument('--train-config-path', required=False, default="train_config.json", help='Path to train_config.json')
