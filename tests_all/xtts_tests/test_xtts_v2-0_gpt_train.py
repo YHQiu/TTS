@@ -12,25 +12,45 @@ from TTS.tts.layers.xtts.trainer.gpt_trainer import GPTArgs, GPTTrainer, GPTTrai
 
 def train_model(train_config):
 
-    XTTS_CHECKPOINT = train_config.XTTS_CHECKPOINT
-    LANGUAGE_BASE = train_config.LANGUAGE_BASE
+    # XTTS_CHECKPOINT = train_config.XTTS_CHECKPOINT
+    # LANGUAGE_BASE = train_config.LANGUAGE_BASE
+    # # Training Parameters
+    # EPOCHS = train_config.EPOCHS
+    # OPTIMIZER_WD_ONLY_ON_WEIGHTS = train_config.OPTIMIZER_WD_ONLY_ON_WEIGHTS  # for multi-gpu training please make it False
+    # START_WITH_EVAL = train_config.START_WITH_EVAL  # if True it will star with evaluation
+    # BATCH_SIZE = train_config.BATCH_SIZE  # set here the batch size
+    # BATCH_GROUP_SIZE = train_config.BATCH_GROUP_SIZE
+    # GRAD_ACUMM_STEPS = train_config.GRAD_ACUMM_STEPS  # set here the grad accumulation steps
+    #
+    # # DATA SET
+    # DATASET_PATH = train_config.DATASET_PATH
+    # DATASET_WAV_PATH = train_config.DATASET_WAV_PATH
+    # TRAIN_CSV = train_config.TRAIN_CSV
+    # TEST_CSV = train_config.TEST_CSV
+    #
+    # # DATA FORMATTER
+    # DATASET_FORMATTER = train_config.DATASET_FORMATTER
+    # DATASET_NAME = train_config.DATASET_NAME
+
+    XTTS_CHECKPOINT = train_config.get("XTTS_CHECKPOINT")
+    LANGUAGE_BASE = train_config.get("LANGUAGE_BASE")
     # Training Parameters
-    EPOCHS = train_config.EPOCHS
-    OPTIMIZER_WD_ONLY_ON_WEIGHTS = train_config.OPTIMIZER_WD_ONLY_ON_WEIGHTS  # for multi-gpu training please make it False
-    START_WITH_EVAL = train_config.START_WITH_EVAL  # if True it will star with evaluation
-    BATCH_SIZE = train_config.BATCH_SIZE  # set here the batch size
-    BATCH_GROUP_SIZE = train_config.BATCH_GROUP_SIZE
-    GRAD_ACUMM_STEPS = train_config.GRAD_ACUMM_STEPS  # set here the grad accumulation steps
+    EPOCHS = train_config.get("EPOCHS")
+    OPTIMIZER_WD_ONLY_ON_WEIGHTS = train_config.get("OPTIMIZER_WD_ONLY_ON_WEIGHTS") # for multi-gpu training please make it False
+    START_WITH_EVAL = train_config.get("START_WITH_EVAL") # if True it will star with evaluation
+    BATCH_SIZE = train_config.get("BATCH_SIZE")
+    BATCH_GROUP_SIZE = train_config.get("BATCH_GROUP_SIZE")
+    GRAD_ACUMM_STEPS = train_config.get("GRAD_ACUMM_STEPS")
 
     # DATA SET
-    DATASET_PATH = train_config.DATASET_PATH
-    DATASET_WAV_PATH = train_config.DATASET_WAV_PATH
-    TRAIN_CSV = train_config.TRAIN_CSV
-    TEST_CSV = train_config.TEST_CSV
+    DATASET_PATH = train_config.get("DATASET_PATH")
+    DATASET_WAV_PATH = train_config.get("DATASET_WAV_PATH")
+    TRAIN_CSV = train_config.get("TRAIN_CSV")
+    TEST_CSV = train_config.get("TEST_CSV")
 
     # DATA FORMATTER
-    DATASET_FORMATTER = train_config.DATASET_FORMATTER
-    DATASET_NAME = train_config.DATASET_NAME
+    DATASET_FORMATTER = train_config.get("DATASET_FORMATTER")
+    DATASET_NAME = train_config.get("DATASET_NAME")
 
     # Training sentences generations
     SPEAKER_REFERENCE = []
