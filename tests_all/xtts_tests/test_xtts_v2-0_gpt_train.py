@@ -231,8 +231,7 @@ if __name__ == "__main__":
         try:
             gpu_idx = int(gpu_index)
             torch.cuda.set_device(gpu_idx)
-            # 这里添加你的训练代码
-            # ...
+            print(f"Use GPU Index {gpu_idx}")
         except ValueError:
             print(f"Invalid GPU index: {gpu_index}")
 
