@@ -96,10 +96,6 @@ class XTTSDataset(torch.utils.data.Dataset):
         print(" > Total eval samples after filtering:", len(self.samples))
 
     def get_text(self, text, lang):
-        if text is not None and len(text) > 82:
-            print(text)
-        elif text is not None:
-            print(f"success {lang}")
         tokens = self.tokenizer.encode(text, lang)
         tokens = torch.IntTensor(tokens)
         assert not torch.any(tokens == 1), f"UNK token found in {text} -> {self.tokenizer.decode(tokens)}"

@@ -9,8 +9,8 @@
     "GRAD_ACUMM_STEPS": 4,
     "DATASET_PATH": "/data/dataset/speech/ljspeech",
     "DATASET_WAV_PATH": "/data/dataset/speech/ljspeech/wavs",
-    "TRAIN_CSV": "/data/dataset/speech/ljspeech/metadata.csv",
-    "TEST_CSV": "/data/dataset/speech/ljspeech/metadata.csv",
+    "TRAIN_CSV": "/data/dataset/speech/ljspeech/metadata_handle.csv",
+    "TEST_CSV": "/data/dataset/speech/ljspeech/metadata_handle.csv",
     "DATASET_FORMATTER": "ljspeech",
     "DATASET_NAME": "ljspeech",
     "OUT_PATH": "/data/model/xtts"
