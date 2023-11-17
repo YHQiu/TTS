@@ -193,8 +193,7 @@ def train_model(train_config):
         output_path=OUT_PATH,
         model=model,
         train_samples=train_samples,
-        eval_samples=eval_samples,
-        gpu=0
+        eval_samples=eval_samples
     )
     trainer.fit()
 
