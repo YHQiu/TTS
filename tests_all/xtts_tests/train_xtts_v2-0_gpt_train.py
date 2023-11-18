@@ -255,7 +255,7 @@ if __name__ == "__main__":
 
     # 从 train_config.json 中读取配置
     with open(config_path, 'r') as config_file:
-        config = json.load(config_file)
+        train_config = json.load(config_file)
 
     if torch.cuda.is_available():
         # Get the number of available GPUs
@@ -263,7 +263,7 @@ if __name__ == "__main__":
 
         # Start a process for each GPU
         mp.spawn(train_model,
-                 args=(config, num_gpus),
+                 args=(train_config, num_gpus),
                  nprocs=num_gpus,
                  join=True)
     else:
