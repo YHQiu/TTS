@@ -15,5 +15,6 @@
     ],
     "DATASET_FORMATTER": "ljspeech",
     "DATASET_NAME": "ljspeech",
-    "OUT_PATH": "/data/model/xtts/test_output"
+    "OUT_PATH": "/data/model/xtts/test_output",
+    "LR": 5e-06
 }

@@ -156,13 +156,13 @@ def train_model(train_config):
         optimizer="AdamW",
         optimizer_wd_only_on_weights=OPTIMIZER_WD_ONLY_ON_WEIGHTS,
         optimizer_params={"betas": [0.9, 0.96], "eps": 1e-8, "weight_decay": 1e-2},
-        lr=5e-06,  # learning rate
+        lr=train_config.LR,  # learning rate
         lr_scheduler="MultiStepLR",
         # it was adjusted accordly for the new step scheme
         lr_scheduler_params={"milestones": [50000 * 18, 150000 * 18, 300000 * 18], "gamma": 0.5, "last_epoch": -1},
         test_sentences=[
             {
-                "text": "看起来报错信息显示有 3 个活动的 GPU，并建议使用 CUDA_VISIBLE_DEVICES 来定义目标 GPU。您设置了 CUDA_VISIBLE_DEVICES 环境变量，但可能还需要确认是否正确设置了只使用一个 GPU。",
+                "text": "看起来报错信息显示有 3 个活动的 GPU，并建议使用 CUDA_VISIBLE_DEVICES 来定义目标 GPU。您设置了 CUDA_VISIBLE_DEVICES 环境变量。",
                 "speaker_wav": SPEAKER_REFERENCE,
                 "language": LANGUAGE,
             },
