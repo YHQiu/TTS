@@ -4,7 +4,7 @@
     "EPOCHS": 5,
     "OPTIMIZER_WD_ONLY_ON_WEIGHTS": false,
     "START_WITH_EVAL": false,
-    "BATCH_SIZE": 16,
+    "BATCH_SIZE": 12,
     "BATCH_GROUP_SIZE": 16,
     "GRAD_ACUMM_STEPS": 16,
     "DATASET_PATH": "/data/dataset/speech/ljspeech",
