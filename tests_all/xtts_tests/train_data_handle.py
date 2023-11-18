@@ -2,6 +2,7 @@ import concurrent.futures
 import os
 import csv
 import librosa
+import numpy as np
 import soundfile as sf
 import argparse
 from praatio import textgrid
@@ -12,14 +13,19 @@ def convert_flac_to_wav(flac_file, output_path):
     y, sr = librosa.load(flac_file, sr=None)
     sf.write(output_path, y, sr)
 
-def process_entry(entrie, flac_path, output_folder, wav_file_name, sr):
-    y, _ = librosa.load(flac_path, sr=sr)
+def process_entry(entrie, y, output_folder, wav_file_name, sr, gain=1.5):
     start_sample = int(entrie.start * sr)
     end_sample = int(entrie.end * sr)
     audio_segment = y[start_sample:end_sample]
 
+    # Adjust the volume by applying gain
+    audio_segment *= gain
+
+    # Clip the audio to ensure it stays within the valid range [-1, 1]
+    audio_segment = np.clip(audio_segment, -1.0, 1.0)
+
     segment_output_path = os.path.join(output_folder, 'wavs', f"{wav_file_name.split('.')[0]}_{start_sample}_{end_sample}.wav")
-    sf.write(segment_output_path, audio_segment, sr)
+    sf.write(segment_output_path, audio_segment, sr, format="WAV")
 
     return f"{wav_file_name.split('.')[0]}_{start_sample}_{end_sample}", entrie.label
 
@@ -60,11 +66,12 @@ def process_data(input_folder, output_folder):
                     # 获取标注层信息
                     tiers = tg.tiers
                     for tier in tqdm(tiers, desc='Processing tiers', unit='tier'):
-                        # max1 = 10
+                        max1 = 1
                         for entrie in tqdm(tier.entries, desc='Processing entries', unit='entrie'):
-                            # if max1 < 0: break
-                            futures.append(executor.submit(process_entry, entrie, flac_path, output_folder, wav_file_name, sr))
-                            # max1 -= 1
+                            if max1 < 0: break
+                            futures.append(executor.submit(process_entry, entrie, y, output_folder, wav_file_name, sr))
+                            max1 -= 1
+                        if max1 < 0: break
 
                     processed_records.add(file)
 
@@ -86,8 +93,8 @@ def process_data(input_folder, output_folder):
 
 def main():
     parser = argparse.ArgumentParser(description='Process audio and text data')
-    parser.add_argument('--input-path', required=False, default="../train_outputs/data/train_L", help='data/dataset/train_L')
-    parser.add_argument('--output-path', required=False, default="../train_outputs/data/train_data", help='"../train_outputs/data/train_data')
+    parser.add_argument('--input-path', required=False, default="train_L/", help='data/dataset/train_L')
+    parser.add_argument('--output-path', required=False, default="train_data/", help='"../train_outputs/data/train_data')
     args = parser.parse_args()
 
     input_path = args.input_path

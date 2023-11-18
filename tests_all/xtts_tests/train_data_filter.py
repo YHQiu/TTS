@@ -13,9 +13,11 @@ data_filtered = data[(data['text_length'] < 40) & (data['text_length'] > 4)].cop
 # 去除text中的<>标签括起来的部分
 data_filtered['text'] = data_filtered['text'].apply(lambda x: re.sub(r'<[^>]*>', '', x))
 
+# 去除text中的空格和&
+data_filtered['text'] = data_filtered['text'].apply(lambda x: x.replace(' ', '').replace('&', ''))
+
 # 检查 wavs/ 目录下是否有对应的音频文件，如果没有则移除数据
 data_filtered['wav_exists'] = data_filtered['filename'].apply(lambda x: os.path.exists(f'wavs/{x}.wav')).copy()
-
 data_filtered = data_filtered[data_filtered['wav_exists']]
 
 # 移除名称和问题数据匹配的行
