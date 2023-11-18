@@ -13,7 +13,7 @@ from TTS.tts.datasets import load_tts_samples
 from TTS.tts.layers.xtts.dvae import DiscreteVAE
 from TTS.tts.layers.xtts.trainer.gpt_trainer import GPTArgs, GPTTrainer, GPTTrainerConfig, XttsAudioConfig
 
-def train_model(train_config, rank, world_size):
+def train_model(rank, train_config, world_size):
 
     print(train_config)
     print(rank)
