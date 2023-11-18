@@ -259,7 +259,7 @@ if __name__ == "__main__":
 
         # Start a process for each GPU
         mp.spawn(train_model,
-                 args=(config, num_gpus),
+                 args=(config, num_gpus, num_gpus),
                  nprocs=num_gpus,
                  join=True)
     else:
