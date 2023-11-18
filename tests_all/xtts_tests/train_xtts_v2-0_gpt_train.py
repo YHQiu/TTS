@@ -15,6 +15,10 @@ from TTS.tts.layers.xtts.trainer.gpt_trainer import GPTArgs, GPTTrainer, GPTTrai
 
 def train_model(train_config, rank, world_size):
 
+    print(train_config)
+    print(rank)
+    print(world_size)
+
     XTTS_CHECKPOINT = train_config.get("XTTS_CHECKPOINT")
     LANGUAGE_BASE = train_config.get("LANGUAGE_BASE")
     # Training Parameters
@@ -259,7 +263,7 @@ if __name__ == "__main__":
 
         # Start a process for each GPU
         mp.spawn(train_model,
-                 args=(config, num_gpus, num_gpus),
+                 args=(config, num_gpus),
                  nprocs=num_gpus,
                  join=True)
     else:
