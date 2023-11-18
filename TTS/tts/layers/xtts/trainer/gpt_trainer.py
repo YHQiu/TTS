@@ -339,7 +339,7 @@ class GPTTrainer(BaseTTS):
 
     @staticmethod
     def get_criterion():
-        return None
+        return torch.nn.CrossEntropyLoss()  # Example criterion, adjust as per your need
 
     def get_sampler(self, dataset: TTSDataset, num_gpus=1):
         # sampler for DDP

@@ -221,6 +221,9 @@ def train_model(rank, train_config, world_size):
     )
     trainer.fit()
 
+"""
+MASTER_ADDR=127.0.0.1 MASTER_PORT=12345  CUDA_VISIBLE_DEVICES=0,1,2 python train_xtts_v2-0_gpt_train.py  --train-config-path train_config.json 
+"""
 if __name__ == "__main__":
 
     # 设置要使用的GPU
