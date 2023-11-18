@@ -4,7 +4,7 @@
     "EPOCHS": 5,
     "OPTIMIZER_WD_ONLY_ON_WEIGHTS": true,
     "START_WITH_EVAL": false,
-    "BATCH_SIZE": 12,
+    "BATCH_SIZE": 8,
     "BATCH_GROUP_SIZE": 16,
     "GRAD_ACUMM_STEPS": 16,
     "DATASET_PATH": "/data/dataset/speech/ljspeech",
@@ -15,5 +15,5 @@
     "DATASET_NAME": "ljspeech",
     "OUT_PATH": "/data/model/xtts",
     "LR": 5e-07,
-    "USE_DDP": true
+    "USE_DDP": false
 }
