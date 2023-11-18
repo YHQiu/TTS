@@ -187,6 +187,7 @@ def train_model(train_config):
             skip_train_epoch=False,
             start_with_eval=START_WITH_EVAL,
             grad_accum_steps=GRAD_ACUMM_STEPS,
+            use_ddp=train_config["USE_DDP"]
         ),
         config,
         output_path=OUT_PATH,
