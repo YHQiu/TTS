@@ -1,8 +1,8 @@
 {
     "XTTS_CHECKPOINT": "~/.local/share/tts/tts_models--multilingual--multi-dataset--xtts_v2/model.pth",
     "LANGUAGE_BASE": "zh-cn",
-    "EPOCHS": 2,
-    "OPTIMIZER_WD_ONLY_ON_WEIGHTS": false,
+    "EPOCHS": 1,
+    "OPTIMIZER_WD_ONLY_ON_WEIGHTS": true,
     "START_WITH_EVAL": false,
     "BATCH_SIZE": 8,
     "BATCH_GROUP_SIZE": 32,
