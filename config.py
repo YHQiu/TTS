@@ -1,0 +1,2 @@
+MS_SPEECH_KEY = ""
+MS_SPEECH_REGION = ""

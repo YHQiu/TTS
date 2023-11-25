@@ -3,7 +3,7 @@ import pandas as pd
 import re
 
 # 读取原始CSV文件
-file_path = 'metadata.csv'  # 替换为你的文件路径
+file_path = 'train_100_data/metadata.csv'  # 替换为你的文件路径
 data = pd.read_csv(file_path, sep='|', header=None, names=['filename', 'text'])
 
 # 移除中文text超过81个字符的行

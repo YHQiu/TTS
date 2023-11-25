@@ -1,9 +1,9 @@
+import json
+
 from azure.cognitiveservices.speech import SpeechConfig, AudioDataStream
 import azure.cognitiveservices.speech as speechsdk
 import config
 import os
-
-from utils.ffmpeg_util import convert_wav_to_mp3
 
 speech_config_zh_CN_XiaochengNeural = speechsdk.SpeechConfig(subscription=config.MS_SPEECH_KEY,
                                                              region=config.MS_SPEECH_REGION)
@@ -49,7 +49,43 @@ async def ms_synthesize_speech(text: str, file_path: str, file_name: str, speech
         # Generate a unique filename for the audio_tools file
         stream.save_to_wav_file(file_path_name)
 
-        # 转为 mp3
-        await convert_wav_to_mp3(file_path, file_path_name, file_path_name.replace(".wav", ".mp3"))
-
         return
+
+import json
+import csv
+
+def jsonl_to_csv(jsonl_file, output_csv):
+    with open(jsonl_file, 'r', encoding='utf-8') as json_file, open(output_csv, 'w', encoding='utf-8', newline='') as csv_file:
+        writer = csv.writer(csv_file, delimiter='|')
+
+        lines = json_file.readlines()
+
+        for index, line in enumerate(lines, start=1):
+            json_obj = json.loads(line)
+            text = json_obj['text'].replace('\n', ' ')  # Replace newline characters with spaces
+            file_name = f"20231125_M_R001S01C01_01_{index:02}"
+
+            writer.writerow([f"{file_name}", text])
+
+if __name__ == "__main__":
+    jsonl_to_csv('test.jsonl', 'metadata.csv')
+    # async def process_jsonl_file(file_path: str):
+    #     with open(file_path, 'r', encoding='utf-8') as json_file:
+    #         lines = json_file.readlines()
+    #
+    #         for index, line in enumerate(lines, start=1):
+    #             json_obj = json.loads(line)
+    #             text = json_obj['text']
+    #             # Generate the file name dynamically
+    #             file_name = f"20231125_M_R001S01C01_01_{index:02}.wav"
+    #
+    #             # Perform speech synthesis for each text
+    #             await ms_synthesize_speech(text, "train_100_data", file_name)
+    #
+    # import asyncio
+    # loop = asyncio.get_event_loop()
+    # loop.run_until_complete(process_jsonl_file('test.jsonl'))
+
+
+
+
