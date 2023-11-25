@@ -66,12 +66,12 @@ def process_data(input_folder, output_folder):
                     # 获取标注层信息
                     tiers = tg.tiers
                     for tier in tqdm(tiers, desc='Processing tiers', unit='tier'):
-                        max1 = 1
+                        # max1 = 1
                         for entrie in tqdm(tier.entries, desc='Processing entries', unit='entrie'):
-                            if max1 < 0: break
+                            # if max1 < 0: break
                             futures.append(executor.submit(process_entry, entrie, y, output_folder, wav_file_name, sr))
-                            max1 -= 1
-                        if max1 < 0: break
+                            # max1 -= 1
+                        # if max1 < 0: break
 
                     processed_records.add(file)
 

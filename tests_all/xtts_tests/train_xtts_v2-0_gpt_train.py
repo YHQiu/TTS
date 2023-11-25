@@ -4,13 +4,20 @@ import os
 from datetime import datetime
 
 import torch
+import torch.nn as nn
+import torch.distributed as dist
+import torch.multiprocessing as mp
 from trainer import Trainer, TrainerArgs
 from TTS.config.shared_configs import BaseDatasetConfig
 from TTS.tts.datasets import load_tts_samples
 from TTS.tts.layers.xtts.dvae import DiscreteVAE
 from TTS.tts.layers.xtts.trainer.gpt_trainer import GPTArgs, GPTTrainer, GPTTrainerConfig, XttsAudioConfig
 
-def train_model(train_config):
+def train_model(rank, train_config, world_size):
+
+    print(train_config)
+    print(rank)
+    print(world_size)
 
     XTTS_CHECKPOINT = train_config.get("XTTS_CHECKPOINT")
     LANGUAGE_BASE = train_config.get("LANGUAGE_BASE")
@@ -35,6 +42,20 @@ def train_model(train_config):
     # Training sentences generations
     SPEAKER_REFERENCE = []
     added_speakers = set()  # 用于记录已添加的发音人
+
+    if torch.cuda.is_available():
+        # Set the current device based on rank
+        torch.cuda.set_device(rank)
+        device = torch.device("cuda", rank)
+    else:
+        device = torch.device("cpu")
+
+    # Initialize process group
+    dist.init_process_group(backend='nccl', init_method='env://', world_size=world_size, rank=rank)
+
+    # Update the batch size for DDP
+    BATCH_SIZE_PER_GPU = BATCH_SIZE
+    BATCH_SIZE = BATCH_SIZE_PER_GPU * world_size
 
     # 输出文件路径
     # 获取当前日期并以特定格式保存
@@ -177,8 +198,11 @@ def train_model(train_config):
         eval_split_size=config.eval_split_size,
     )
 
-    # init the model from config
-    model = GPTTrainer.init_from_config(config)
+    # Initialize the model and move it to the current device
+    model = GPTTrainer.init_from_config(config).to(device)
+
+    # Wrap the model with DDP
+    model = nn.parallel.DistributedDataParallel(model, device_ids=[rank], output_device=rank)
 
     # init the trainer and 🚀
     trainer = Trainer(
@@ -197,6 +221,9 @@ def train_model(train_config):
     )
     trainer.fit()
 
+"""
+MASTER_ADDR=127.0.0.1 MASTER_PORT=12345  CUDA_VISIBLE_DEVICES=0,1,2 python train_xtts_v2-0_gpt_train.py  --train-config-path train_config.json 
+"""
 if __name__ == "__main__":
 
     # 设置要使用的GPU
@@ -231,7 +258,16 @@ if __name__ == "__main__":
 
     # 从 train_config.json 中读取配置
     with open(config_path, 'r') as config_file:
-        config = json.load(config_file)
+        train_config = json.load(config_file)
 
-    # 将读取的配置传递给 train_model 函数
-    train_model(config)
+    if torch.cuda.is_available():
+        # Get the number of available GPUs
+        num_gpus = torch.cuda.device_count()
+
+        # Start a process for each GPU
+        mp.spawn(train_model,
+                 args=(train_config, num_gpus),
+                 nprocs=num_gpus,
+                 join=True)
+    else:
+        print("CUDA not available. Cannot perform distributed training.")
