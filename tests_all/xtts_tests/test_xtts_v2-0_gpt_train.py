@@ -17,6 +17,8 @@ def train_model(train_config):
     TRAIN_XTTS = train_config.get("TRAIN_XTTS")
     if not TRAIN_XTTS:
         XTTS_CHECKPOINT = None
+    else:
+        print("train xtts model")
     # Training Parameters
     EPOCHS = train_config.get("EPOCHS")
     OPTIMIZER_WD_ONLY_ON_WEIGHTS = train_config.get("OPTIMIZER_WD_ONLY_ON_WEIGHTS") # for multi-gpu training please make it False
