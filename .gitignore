@@ -172,3 +172,5 @@ local_scripts/*
 coqui_demos/*
 /tests_all/xtts_tests/train_L/
 /tests_all/xtts_tests/train_data/
+
+config.py

@@ -85,7 +85,7 @@ def process_data(input_folder, output_folder):
     print("end write processed_records_file")
 
     print("start write csvfile")
-    with open(os.path.join(output_folder, 'metadata.csv'), 'a', newline='', encoding='utf-8') as csvfile:
+    with open(os.path.join(output_folder, 'train_100_data/metadata.csv'), 'a', newline='', encoding='utf-8') as csvfile:
         csv_writer = csv.writer(csvfile, delimiter='|')
         for record in new_records:
             csv_writer.writerow(record)

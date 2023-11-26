@@ -13,8 +13,8 @@ config_dataset = BaseDatasetConfig(
     formatter="ljspeech",
     dataset_name="ljspeech",
     path="tests_all/data/ljspeech/",
-    meta_file_train="metadata.csv",
-    meta_file_val="metadata.csv",
+    meta_file_train="train_100_data/metadata.csv",
+    meta_file_val="train_100_data/metadata.csv",
     language="en",
 )
 
