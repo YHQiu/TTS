@@ -1,11 +1,11 @@
 {
     "XTTS_CHECKPOINT": "~/.local/share/tts/tts_models--multilingual--multi-dataset--xtts_v2/model.pth",
     "LANGUAGE_BASE": "zh-cn",
-    "EPOCHS": 50,
+    "EPOCHS": 5,
     "OPTIMIZER_WD_ONLY_ON_WEIGHTS": true,
     "START_WITH_EVAL": false,
-    "BATCH_SIZE": 2,
-    "BATCH_GROUP_SIZE": 48,
+    "BATCH_SIZE": 16,
+    "BATCH_GROUP_SIZE": 8,
     "GRAD_ACUMM_STEPS": 1,
     "DATASET_PATH": "/data/dataset/speech/ljspeech",
     "DATASET_WAV_PATH": "/data/dataset/speech/ljspeech/wavs",
@@ -16,5 +16,5 @@
     "OUT_PATH": "/data/model/xtts",
     "LR": 5e-07,
     "USE_DDP": false,
-    "TRAIN_XTTS": false
+    "TRAIN_XTTS": true
 }
