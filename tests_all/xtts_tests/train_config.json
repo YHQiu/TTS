@@ -15,5 +15,6 @@
     "DATASET_NAME": "ljspeech",
     "OUT_PATH": "/data/model/xtts",
     "LR": 5e-07,
-    "USE_DDP": false
+    "USE_DDP": false,
+    "TRAIN_XTTS": false
 }
