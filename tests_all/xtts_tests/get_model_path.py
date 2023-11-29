@@ -31,3 +31,4 @@ def get_user_data_dir(appname):
 if __name__ == "__main__":
     print(get_user_data_dir("tts"))
     print(get_tests_output_path())
+    print(len("港风回忆，今日心动。Nostalgic vibes, today's excitement."))
