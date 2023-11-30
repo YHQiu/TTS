@@ -111,22 +111,69 @@ def train_model(train_config):
     LANGUAGE = config_dataset.language
 
     # init args and config
-    model_args = GPTArgs(
-        max_conditioning_length=132300,  # 6 secs
-        min_conditioning_length=66150,  # 3 secs
-        debug_loading_failures=False,
-        max_wav_length=255995,  # ~11.6 seconds
-        max_text_length = 200, # 200
-        mel_norm_file=MEL_NORM_FILE,
-        dvae_checkpoint=DVAE_CHECKPOINT,
-        xtts_checkpoint=XTTS_CHECKPOINT,  # checkpoint path of the model that you want to fine-tune
-        tokenizer_file=TOKENIZER_FILE,
-        gpt_num_audio_tokens=1026,
-        gpt_start_audio_token=1024,
-        gpt_stop_audio_token=1025,
-        gpt_use_masking_gt_prompt_approach=True,
-        gpt_use_perceiver_resampler=True,
-    )
+    # model_args = GPTArgs(
+    #     max_conditioning_length=132300,  # 6 secs
+    #     min_conditioning_length=66150,  # 3 secs
+    #     debug_loading_failures=False,
+    #     max_wav_length=255995,  # ~11.6 seconds
+    #     max_text_length = 200, # 200
+    #     mel_norm_file=MEL_NORM_FILE,
+    #     dvae_checkpoint=DVAE_CHECKPOINT,
+    #     xtts_checkpoint=XTTS_CHECKPOINT,  # checkpoint path of the model that you want to fine-tune
+    #     tokenizer_file=TOKENIZER_FILE,
+    #     gpt_num_audio_tokens=1026,
+    #     gpt_start_audio_token=1024,
+    #     gpt_stop_audio_token=1025,
+    #     gpt_use_masking_gt_prompt_approach=True,
+    #     gpt_use_perceiver_resampler=True,
+    # )
+    model_args = {
+        "max_conditioning_length" : 132300,  # 6 secs
+        "min_conditioning_length" : 66150,  # 3 secs
+        "debug_loading_failures" : False,
+        "max_wav_length" : 255995,  # ~11.6 seconds
+        "max_text_length" : 200,  # 200
+        "mel_norm_file" : MEL_NORM_FILE,
+        "dvae_checkpoint" : DVAE_CHECKPOINT,
+        "xtts_checkpoint" : XTTS_CHECKPOINT,  # checkpoint path of the model that you want to fine-tune
+        "tokenizer_file" : TOKENIZER_FILE,
+
+        "gpt_batch_size": 1,
+        "enable_redaction": False,
+        "kv_cache": False,
+        "num_chars": 255,
+        "gpt_max_audio_tokens": 605,
+        "gpt_max_text_tokens": 402,
+        "gpt_max_prompt_tokens": 70,
+        "gpt_layers": 30,
+        "gpt_n_model_channels": 1024,
+        "gpt_n_heads": 16,
+        "gpt_number_text_tokens": 6153,
+        "gpt_num_audio_tokens": 1026,
+        "gpt_start_audio_token": 1024,
+        "gpt_stop_audio_token": 1025,
+        "gpt_code_stride_len": 1024,
+        "gpt_use_masking_gt_prompt_approach": True,
+        "gpt_use_perceiver_resampler": True,
+        "diff_model_channels": 1024,
+        "diff_num_layers": 10,
+        "diff_in_channels": 100,
+        "diff_out_channels": 200,
+        "diff_in_latent_channels": 1024,
+        "diff_in_tokens": 8193,
+        "diff_dropout": 0,
+        "diff_use_fp16": False,
+        "diff_num_heads": 16,
+        "diff_layer_drop": 0,
+        "diff_unconditioned_percentage": 0,
+        "input_sample_rate": 22050,
+        "output_sample_rate": 24000,
+        "output_hop_length": 256,
+        "decoder_input_dim": 1024,
+        "d_vector_dim": 512,
+        "cond_d_vector_in_each_upsampling_layer": True,
+        "duration_const": 102400
+    }
 
     # 读取模型配置文件
     # with open("config.json", 'r') as model_config_file:
