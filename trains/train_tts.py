@@ -56,6 +56,8 @@ def main():
     # init the model from config
     model = setup_model(config, train_samples + eval_samples)
 
+    print(model)
+
     # init the trainer and 🚀
     trainer = Trainer(
         train_args,
