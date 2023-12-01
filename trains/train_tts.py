@@ -23,6 +23,8 @@ def main():
     args, config_overrides = parser.parse_known_args()
     train_args.parse_args(args)
 
+    print(args)
+
     # load config.json and register
     if args.config_path or args.continue_path:
         if args.config_path:
