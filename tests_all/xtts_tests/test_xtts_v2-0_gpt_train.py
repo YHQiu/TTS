@@ -162,10 +162,7 @@ def train_model(train_config):
         duration_const=102400
     )
 
-    # 读取模型配置文件
-    # with open("config.json", 'r') as model_config_file:
-    #     model_args = json.load(model_config_file)
-
+    # 读取模型语音配置配置文件
     audio_config = XttsAudioConfig(sample_rate=22050, dvae_sample_rate=22050, output_sample_rate=24000)
 
     config = GPTTrainerConfig(
