@@ -127,6 +127,8 @@ def train_model(train_config):
     #     gpt_use_masking_gt_prompt_approach=True,
     #     gpt_use_perceiver_resampler=True,
     # )
+
+    # Model config
     model_args = GPTArgs(
         max_conditioning_length=132300,  # 6 secs
         min_conditioning_length=66150,  # 3 secs
@@ -162,9 +164,10 @@ def train_model(train_config):
         duration_const=102400
     )
 
-    # 读取模型语音配置配置文件
+    # Audio Config
     audio_config = XttsAudioConfig(sample_rate=22050, dvae_sample_rate=22050, output_sample_rate=24000)
 
+    # Trainer Config
     config = GPTTrainerConfig(
         epochs=EPOCHS,
         output_path=OUT_PATH,
@@ -219,7 +222,7 @@ def train_model(train_config):
     # init the trainer and 🚀
     trainer = Trainer(
         TrainerArgs(
-            restore_path=None,  # xtts checkpoint is restored via xtts_checkpoint key so no need of restore it using Trainer restore_path parameter
+            restore_path=os.path.join(OUT_PATH, "restore"),  # xtts checkpoint is restored via xtts_checkpoint key so no need of restore it using Trainer restore_path parameter
             skip_train_epoch=False,
             start_with_eval=START_WITH_EVAL,
             grad_accum_steps=GRAD_ACUMM_STEPS,
