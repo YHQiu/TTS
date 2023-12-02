@@ -9,6 +9,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from train_config import TrainConfig
 from dataset import TextToSpeechDataset
 from ytts_model import YTTS
+import torch.distributed as dist
 
 class TextToSpeechTrainer:
     def __init__(self, model: YTTS, train_loader, val_loader, train_config: TrainConfig):
@@ -71,12 +72,28 @@ def main(train_ytts_config):
     data_config = config_data['data_config']
     train_config : TrainConfig = TrainConfig(**config_data['train_config'])
 
+    # 设置分布式训练参数
+    # 这些参数可以根据你的具体需求进行修改
+    rank = 0  # 当前进程的排名
+    world_size = torch.cuda.device_count()  # 获取可用的 GPU 数量
+    backend = 'nccl'  # 使用的后端，可以是 gloo、nccl 等
+
+    # 初始化进程组
+    dist.init_process_group(
+        backend=backend,
+        init_method='tcp://localhost:54321',  # 这里的地址和端口需要根据实际情况进行设置
+        rank=rank,
+        world_size=world_size
+    )
+
     # 加载数据集
     dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
     train_loader = DataLoader(dataset, batch_size=train_config.batch_size, shuffle=True)
 
     # 设置GPU或CPU
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    if device == 'cuda':
+        print("use cuda")
 
     # 初始化模型并放置到GPU上
     model = YTTS()  # 替换成你的模型
@@ -84,7 +101,9 @@ def main(train_ytts_config):
 
     # 初始化DistributedDataParallel，如果启用了分布式训练
     if torch.cuda.device_count() > 1:
+        # 使用 DistributedDataParallel 包装模型
         model = DDP(model)
+        print("使用分布式训练")
 
     # 创建训练器
     trainer = TextToSpeechTrainer(model, train_loader, None, train_config)
