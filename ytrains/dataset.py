@@ -6,7 +6,7 @@ import pandas as pd
 from torch.utils.data import DataLoader, Dataset
 import torch
 
-from ytrains.train_config import TrainConfig
+from train_config import TrainConfig
 
 
 class TextToSpeechDataset(Dataset):
