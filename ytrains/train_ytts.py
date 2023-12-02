@@ -24,7 +24,11 @@ class TextToSpeechTrainer:
         self.criterion = nn.MSELoss()  # 可根据任务选择合适的损失函数
 
     def train(self):
+        print("开始训练")
         for epoch in range(self.num_epochs):
+
+            print(f"开始训练epoch={epoch}")
+
             self.model.train()
             total_loss = 0.0
 
@@ -72,6 +76,8 @@ def main(train_ytts_config):
     data_config = config_data['data_config']
     train_config : TrainConfig = TrainConfig(**config_data['train_config'])
 
+    print(f"加载完成配置文件{train_config}")
+
     # 设置分布式训练参数
     # 这些参数可以根据你的具体需求进行修改
     rank = 0  # 当前进程的排名
@@ -86,14 +92,20 @@ def main(train_ytts_config):
         world_size=world_size
     )
 
+    print(f"初始化完成分布式训练进程组tcp://localhost:54321：{backend} {rank} {world_size}")
+
     # 加载数据集
     dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
     train_loader = DataLoader(dataset, batch_size=train_config.batch_size, shuffle=True)
+
+    print(f"加载完成数据集,总计{len(dataset)}条数据待训练")
 
     # 设置GPU或CPU
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if device == 'cuda':
         print("use cuda")
+    else:
+        print("use cpu")
 
     # 初始化模型并放置到GPU上
     model = YTTS()  # 替换成你的模型
