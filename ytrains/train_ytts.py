@@ -3,12 +3,12 @@ import torch
 import torch.optim as optim
 from torch import nn
 import os
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 from torch.nn.parallel import DistributedDataParallel as DDP
 
-from ytrains.config.train_config import TrainConfig
-from ytrains.data.dataset import TextToSpeechDataset
-from ytrains.models.ytts import YTTS
+from ytrains.train_config import TrainConfig
+from ytrains.dataset import TextToSpeechDataset
+from ytrains.ytts_model import YTTS
 
 class TextToSpeechTrainer:
     def __init__(self, model: YTTS, train_loader, val_loader, train_config: TrainConfig):
