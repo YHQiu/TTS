@@ -102,9 +102,12 @@ def main(args, local_rank):
     print(f"加载完成模型{model}")
 
     # 使用 DistributedDataParallel 包装模型
+
+    print(f"开始加载分布式模型{local_rank}")
+
     model = DDP(model, device_ids=[local_rank])
 
-    print(f"加载完成分布式模型{model} {local_rank}")
+    print(f"加载完成分布式模型{model}  {local_rank}")
 
     # 创建训练器
     trainer = TextToSpeechTrainer(model, train_loader, None, train_config)
