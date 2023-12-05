@@ -89,11 +89,11 @@ class YTTS(nn.Module):
 
     def forward(self, input_sequence):
         texts = input_sequence
-        max_seq_len = max(len(tokenizer.tokenize(text)) for text in texts)  # 获取最大的序列长度
+        max_seq_len = max(len(tokenizer.tokenize(text)) for text in texts)  # 获取实际文本序列生成的 mel_output 的最大长度
         batch_size = len(texts)
 
-        # 初始化模型输出为全零张量
-        mel_outputs = torch.zeros(batch_size, self.max_len, self.mel_output_size).to(self.device)
+        # 初始化模型输出为全零张量，使用实际生成的最大长度
+        mel_outputs = torch.zeros(batch_size, max_seq_len, self.mel_output_size).to(self.device)
 
         for i, text in enumerate(texts):
             tokens = tokenizer.tokenize(text)
