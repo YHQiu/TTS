@@ -130,5 +130,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     dist.init_process_group(backend='nccl', world_size=args.world_size)  # 在这里指定world_size
     local_rank = torch.distributed.get_rank()
-    print(f"当前GPU {local_rank}")
+    print(f"当前GPU {local_rank} {args.world_size}")
     main(args, local_rank)
