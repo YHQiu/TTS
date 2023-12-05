@@ -16,10 +16,10 @@ class TrainConfig:
 
 class DataConfig:
 
-    def __init__(self, metadata_path, wavs_dir, gpt_max_len=512):
+    def __init__(self, metadata_path, wavs_dir, mel_max_len=512):
         self.metadata_path = metadata_path
         self.wavs_dir = wavs_dir
-        self.gpt_max_len = gpt_max_len
+        self.mel_max_len = mel_max_len
 
     @staticmethod
     def load_from_json(path):

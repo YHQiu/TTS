@@ -13,7 +13,7 @@ class TextToSpeechDataset(Dataset):
     def __init__(self, args: DataConfig):
         self.metadata = pd.read_csv(args.metadata_path, sep='|', header=None, names=['ID', 'Text', 'Text2'])
         self.wavs_dir = args.wavs_dir
-        self.gpt_max_len = args.gpt_max_len
+        self.gpt_max_len = args.mel_max_len
         wav_file = os.path.join(self.wavs_dir, self.metadata.iloc[0, 0] + '.wav')
         _, sample_rate = torchaudio.load(wav_file)
         self.sample_rate = sample_rate

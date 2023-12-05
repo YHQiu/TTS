@@ -8,9 +8,10 @@
   "data_config": {
       "metadata_path": "./datasets/metadata.csv",
       "wavs_dir": "./datasets/wavs",
-      "gpt_max_len": 512
+      "mel_max_len":512
   },
   "model_config": {
-    "gpt_max_len": 512
+    "gpt_max_len": 512,
+    "mel_max_len": 512
   }
 }

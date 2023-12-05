@@ -39,7 +39,7 @@ class PositionalEncoding(nn.Module):
         return x + encoding.detach().to(self.device)
 
 class YTTS(nn.Module):
-    def __init__(self, device, vocab_size=30522, d_model=768, num_layers=6, num_heads=8, d_ff=2048, max_len=512, mel_output_size=80):
+    def __init__(self, device, vocab_size=30522, d_model=768, num_layers=6, num_heads=8, d_ff=2048, max_len=512, mel_max_len=512):
         """
         Args:
 
@@ -68,7 +68,7 @@ class YTTS(nn.Module):
         self.num_heads = num_heads
         self.d_ff = d_ff
         self.max_len = max_len
-        self.mel_output_size = mel_output_size
+        self.mel_max_len = mel_max_len
 
         self.embedding = nn.Embedding(vocab_size, d_model).to(device)
         self.positional_encoding = PositionalEncoding(d_model, device=device, max_len=max_len).to(device)
@@ -82,7 +82,7 @@ class YTTS(nn.Module):
             num_layers=num_layers
         ).to(device)
 
-        self.mel_generation = nn.Linear(d_model, mel_output_size).to(device)
+        self.mel_generation = nn.Linear(d_model, mel_max_len).to(device)
         self.hidden_layer = nn.Linear(d_model, d_model).to(device)
 
         self.to(device)
@@ -90,8 +90,6 @@ class YTTS(nn.Module):
     def forward(self, input_sequence):
 
         texts = input_sequence
-        max_seq_len = max(len(tokenizer.tokenize(text)) for text in texts)  # 获取实际文本序列生成的 mel_output 的最大长度
-        batch_size = len(texts)
 
         # 初始化模型输出为全零张量，使用实际生成的最大长度
         mel_outputs = []
@@ -111,15 +109,12 @@ class YTTS(nn.Module):
 
             encoded = self.transformer_encoder(transformer_output)
             hidden_output = self.hidden_layer(encoded)
+
+            # 频谱输出
             mel_output = self.mel_generation(hidden_output)
 
-            # 对 mel_output 进行填充或裁剪，使其长度与最大长度相同
-            seq_len = mel_output.size(1)
-            if seq_len < max_seq_len:
-                pad = torch.zeros(batch_size, max_seq_len - seq_len, self.mel_output_size).to(self.device)
-                mel_output = torch.cat([mel_output, pad], dim=1)
-            elif seq_len > max_seq_len:
-                mel_output = mel_output[:, :max_seq_len, :]
+            # 调整输出形状以匹配预期形状 (通道数, 频谱特征维度, 时间步数)
+            mel_output = mel_output.permute(0, 2, 1).contiguous()  # 调整维度顺序
 
             mel_outputs.append(mel_output)
 
