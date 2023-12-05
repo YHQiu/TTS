@@ -66,8 +66,10 @@ class YTTS(nn.Module):
         self.max_len = max_len
         self.device = device
 
-        self.embedding = nn.Embedding(vocab_size, d_model, device=self.device)
+        self.embedding = nn.Embedding(vocab_size, d_model)
+        self.embedding.to(self.device)
         self.positional_encoding = PositionalEncoding(d_model, device=self.device, max_len=max_len)
+        self.positional_encoding.to(self.device)
 
         # Transformer layers
         self.transformer_layers = nn.ModuleList([
@@ -89,6 +91,14 @@ class YTTS(nn.Module):
         self.to(device)
 
     def forward(self, input_sequence):
+        """
+        回归
+        Args:
+            input_sequence:
+
+        Returns:
+
+        """
         # 输入是文本列表
         texts = input_sequence
 
@@ -117,6 +127,15 @@ class YTTS(nn.Module):
         return mel_outputs
 
     def criterion(self, outputs, targets):
+        """
+        计算损失
+        Args:
+            outputs:
+            targets:
+
+        Returns:
+
+        """
         # 将输出和目标列表中的张量拼接成一个张量
         outputs_combined = torch.cat([output.unsqueeze(0) for output in outputs], dim=0)
         targets_combined = targets
