@@ -3,7 +3,7 @@ import json
 import torch
 import os
 from torch.utils.data import DataLoader, SequentialSampler
-from train_config import TrainConfig
+from train_config import TrainConfig, DataConfig
 from dataset import TextToSpeechDataset
 from ytrainer import TextToSpeechTrainer
 from ytts_model import YTTS
@@ -21,20 +21,20 @@ def main(args):
         config_data = json.load(f)
 
     # 从JSON文件加载数据集配置和训练配置
-    data_config = config_data['data_config']
+    data_config = DataConfig(**config_data['data_config'])
     train_config = TrainConfig(**config_data['train_config'])
 
     print(f"加载完成配置文件 {train_config} {datetime.datetime.now()}")
 
     # 加载数据集
-    dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
+    dataset = TextToSpeechDataset(data_config)
     train_sampler = SequentialSampler(dataset)
     train_loader = DataLoader(dataset, batch_size=train_config.batch_size, sampler=train_sampler)
 
     print(f"加载完成数据集,总计{len(dataset)}条数据待训练 {datetime.datetime.now()}")
 
     # 初始化模型并放置到对应设备上
-    model = YTTS(device=device)
+    model = YTTS(device=device, max_len=dataset.gpt_max_len)
 
     print(f"加载完成模型{model}")
 

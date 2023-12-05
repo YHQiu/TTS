@@ -6,13 +6,17 @@ import pandas as pd
 from torch.utils.data import DataLoader, Dataset
 import torch
 
-from train_config import TrainConfig
+from train_config import TrainConfig, DataConfig
 
 
 class TextToSpeechDataset(Dataset):
-    def __init__(self, metadata_path, wavs_dir):
-        self.metadata = pd.read_csv(metadata_path, sep='|', header=None, names=['ID', 'Text', 'Text2'])
-        self.wavs_dir = wavs_dir
+    def __init__(self, args: DataConfig):
+        self.metadata = pd.read_csv(args.metadata_path, sep='|', header=None, names=['ID', 'Text', 'Text2'])
+        self.wavs_dir = args.wavs_dir
+        self.gpt_max_len = args.gpt_max_len
+        wav_file = os.path.join(self.wavs_dir, self.metadata.iloc[0, 0] + '.wav')
+        _, sample_rate = torchaudio.load(wav_file)
+        self.sample_rate = sample_rate
 
     def __len__(self):
         return len(self.metadata)
@@ -31,11 +35,8 @@ class TextToSpeechDataset(Dataset):
         # 读取文本并进行编码（示例中使用简单的单词索引作为编码）
         text = self.metadata.iloc[idx, 1]
 
-        # 计算最大长度 max_len
-        hop_length = 512  # 假设每个帧的时间间隔是 512（需要根据你的实际数据进行设定）
-
-        max_audio_length = 11.6  # 最大音频长度限制为 11.6 秒
-        max_len = int((max_audio_length * sample_rate) / hop_length)
+        # 最大长度 max_len
+        max_len = self.gpt_max_len
 
         # 如果特征长度小于最大长度，则进行填充
         if log_mel_spectrogram.shape[2] < max_len:
@@ -52,8 +53,6 @@ class TextToSpeechDataset(Dataset):
 def load_tts_samples(
         datasets: Dict,
         eval_split=True,
-        formatter: Callable = None,
-        eval_split_max_size=None,
         eval_split_size=0.01,
 ) -> Tuple[DataLoader, DataLoader]:
     dataset = TextToSpeechDataset(datasets['metadata'], datasets['wavs'])

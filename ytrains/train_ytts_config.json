@@ -7,6 +7,7 @@
   },
   "data_config": {
       "metadata": "./datasets/metadata.csv",
-      "wavs": "./datasets/wavs"
+      "wavs": "./datasets/wavs",
+      "gpt_max_len": 512
   }
 }

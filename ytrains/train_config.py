@@ -13,3 +13,16 @@ class TrainConfig:
         with open(path, 'r') as f:
             config_data = json.load(f)
         return cls(**config_data)
+
+class DataConfig:
+
+    def __init__(self, metadata_path, wavs_dir, gpt_max_len=512):
+        self.metadata_path = metadata_path
+        self.wavs_dir = wavs_dir
+        self.gpt_max_len = gpt_max_len
+
+    @staticmethod
+    def load_from_json(path):
+        with open(path, 'r') as f:
+            config = json.load(f)
+        return DataConfig(**config)

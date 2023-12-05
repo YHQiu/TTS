@@ -39,7 +39,7 @@ class PositionalEncoding(nn.Module):
         return x + encoding.detach().to(self.device)
 
 class YTTS(nn.Module):
-    def __init__(self, device, vocab_size=30522, d_model=768, num_layers=6, num_heads=8, d_ff=2048, max_len=4096, mel_output_size=80):
+    def __init__(self, device, vocab_size=30522, d_model=768, num_layers=6, num_heads=8, d_ff=2048, max_len=512, mel_output_size=80):
         """
         Args:
 
@@ -88,6 +88,7 @@ class YTTS(nn.Module):
         self.to(device)
 
     def forward(self, input_sequence):
+
         texts = input_sequence
         max_seq_len = max(len(tokenizer.tokenize(text)) for text in texts)  # 获取实际文本序列生成的 mel_output 的最大长度
         batch_size = len(texts)
