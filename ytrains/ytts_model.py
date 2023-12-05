@@ -36,7 +36,7 @@ class PositionalEncoding(nn.Module):
             # Truncate encoding to match the sequence length of x
             encoding = self.encoding[:seq_len, :]
 
-        return x + encoding.detach()
+        return x + encoding.detach().to(self.device)
 
 class YTTS(nn.Module):
     def __init__(self, device, vocab_size=30522, d_model=768, num_layers=6, num_heads=8, d_ff=2048, max_len=4096, mel_output_size=80):
