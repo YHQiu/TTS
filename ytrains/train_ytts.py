@@ -123,4 +123,8 @@ if __name__ == '__main__':
     parser.add_argument('--world-size', type=int, default=torch.cuda.device_count())
     args = parser.parse_args()
 
+    # 初始化进程组
+    dist.init_process_group(backend='nccl', init_method='tcp://127.0.0.1',
+                            world_size=args.world_size, rank=args.local_rank)
+
     main(args.train_ytts_config)
