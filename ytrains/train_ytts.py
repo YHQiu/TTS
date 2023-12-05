@@ -2,7 +2,7 @@ import datetime
 import json
 import torch
 import os
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, SequentialSampler
 from train_config import TrainConfig
 from dataset import TextToSpeechDataset
 from ytrainer import TextToSpeechTrainer
@@ -31,7 +31,7 @@ def main(args):
 
     # 加载数据集
     dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
-    train_sampler = torch.utils.data.distributed.DistributedSampler(dataset)
+    train_sampler = SequentialSampler(dataset)
     train_loader = DataLoader(dataset, batch_size=train_config.batch_size, sampler=train_sampler)
 
     print(f"加载完成数据集,总计{len(dataset)}条数据待训练 {datetime.datetime.now()}")
