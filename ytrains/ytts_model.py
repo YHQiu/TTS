@@ -6,8 +6,9 @@ from transformers import BertTokenizer
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 class PositionalEncoding(nn.Module):
-    def __init__(self, d_model, max_len=4096):
+    def __init__(self, d_model, device, max_len=4096):
         super(PositionalEncoding, self).__init__()
+        self.device = device
         self.max_len = max_len
         self.d_model = d_model
         self.encoding = torch.zeros(max_len, d_model)
@@ -65,16 +66,16 @@ class YTTS(nn.Module):
         self.max_len = max_len
         self.device = device
 
-        self.embedding = nn.Embedding(vocab_size, d_model)
-        self.positional_encoding = PositionalEncoding(d_model, max_len=max_len)
+        self.embedding = nn.Embedding(vocab_size, d_model, device=self.device)
+        self.positional_encoding = PositionalEncoding(d_model, device=self.device, max_len=max_len)
 
         # Transformer layers
         self.transformer_layers = nn.ModuleList([
-            nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff)
+            nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff, device=self.device)
             for _ in range(num_layers)
         ])
         self.transformer_encoder = nn.TransformerEncoder(
-            nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff),
+            nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff, device=self.device),
             num_layers=num_layers
         )
 
