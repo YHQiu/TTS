@@ -131,4 +131,5 @@ if __name__ == '__main__':
     parser.add_argument('--world-size', type=int, default=torch.cuda.device_count())
     args = parser.parse_args()
 
+    print(f"当前GPU {args.local_rank}")
     main(args, args.local_rank)
