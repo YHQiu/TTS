@@ -126,9 +126,9 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Train Text-to-Speech Model')
     parser.add_argument('--train_ytts_config', type=str, default="train_ytts_config.json", help='Path to train YTTS configuration JSON file')
-    parser.add_argument('--world-size', type=int, default=torch.cuda.device_count())
+    parser.add_argument('--world-size', type=int, default=1)  # 将world-size设置为1
     args = parser.parse_args()
-    dist.init_process_group(backend='nccl')
+    dist.init_process_group(backend='nccl', world_size=args.world_size)  # 在这里指定world_size
     local_rank = torch.distributed.get_rank()
     print(f"当前GPU {local_rank}")
     main(args, local_rank)
