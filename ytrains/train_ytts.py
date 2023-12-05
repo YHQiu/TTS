@@ -22,7 +22,8 @@ class TextToSpeechTrainer:
 
         # 定义优化器和损失函数
         self.optimizer = optim.Adam(model.parameters(), lr=train_config.learning_rate)
-        self.criterion = nn.MSELoss()  # 可根据任务选择合适的损失函数
+        # self.criterion = nn.MSELoss()  # 可根据任务选择合适的损失函数
+        print(f"初始化完成 TextToSpeechTrainer model {self.model} train_loader {self.train_loader} val_loader {self.val_loader} learning_rate {self.learning_rate} num_epochs {self.num_epochs}")
 
     def train(self):
         print("开始训练")
@@ -34,7 +35,7 @@ class TextToSpeechTrainer:
             for inputs, targets in self.train_loader:
                 self.optimizer.zero_grad()
                 outputs = self.model(inputs)
-                loss = self.criterion(outputs, targets)
+                loss = self.model.criterion(outputs, targets)
                 loss.backward()
                 self.optimizer.step()
 
