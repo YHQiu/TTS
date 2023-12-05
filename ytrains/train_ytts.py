@@ -81,7 +81,7 @@ def main(train_ytts_config):
 
     # 设置分布式训练参数
     # 这些参数可以根据你的具体需求进行修改
-    rank = 0  # 当前进程的排名
+    rank = args.local_rank  # 当前进程的排名
     world_size = torch.cuda.device_count()  # 获取可用的 GPU 数量
     backend = 'nccl'  # 使用的后端，可以是 gloo、nccl 等
 
@@ -135,6 +135,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Train Text-to-Speech Model')
     parser.add_argument('--train_ytts_config', type=str, default="train_ytts_config.json", help='Path to train YTTS configuration JSON file')
+    parser.add_argument('--local-rank', default=54321)
+    parser.add_argument('--nproc_per_node', default=torch.cuda.device_count())
     args = parser.parse_args()
 
     main(args.train_ytts_config)
