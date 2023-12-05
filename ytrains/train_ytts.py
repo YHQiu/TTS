@@ -64,12 +64,13 @@ class TextToSpeechTrainer:
     def load_model(self, path):
         self.model.load_state_dict(torch.load(path))
 
-def main(train_ytts_config, local_rank):
+def main(args, local_rank):
     # 设置GPU或CPU
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"PyTorch 版本: {torch.__version__}")
     print(f"CUDA 版本 {torch.version.cuda}")
     print(f"use {device}")
+    train_ytts_config = args.train_ytts_config
 
     # 从命令行传入 train_ytts_config 训练配置文件
     with open(train_ytts_config, 'r') as f:
@@ -83,7 +84,7 @@ def main(train_ytts_config, local_rank):
 
     # 初始化进程组
     dist.init_process_group(backend='nccl', init_method='tcp://127.0.0.1:12354',
-                            world_size=train_config.world_size, rank=local_rank)
+                            world_size=args.world_size, rank=local_rank)
 
     # 加载数据集
     dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
@@ -118,4 +119,4 @@ if __name__ == '__main__':
     parser.add_argument('--world-size', type=int, default=torch.cuda.device_count())
     args = parser.parse_args()
 
-    main(args.train_ytts_config, args.local_rank)
+    main(args, args.local_rank)
