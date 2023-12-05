@@ -1,3 +1,4 @@
+import datetime
 import json
 import torch
 import torch.optim as optim
@@ -76,7 +77,7 @@ def main(train_ytts_config):
     data_config = config_data['data_config']
     train_config : TrainConfig = TrainConfig(**config_data['train_config'])
 
-    print(f"加载完成配置文件{train_config}")
+    print(f"加载完成配置文件{train_config} {datetime.datetime}")
 
     # 设置分布式训练参数
     # 这些参数可以根据你的具体需求进行修改
@@ -85,20 +86,21 @@ def main(train_ytts_config):
     backend = 'nccl'  # 使用的后端，可以是 gloo、nccl 等
 
     # 初始化进程组
+    print(f"正在开始初始化完成分布式训练进程组{backend} {rank} {datetime.datetime}")
     dist.init_process_group(
         backend=backend,
-        init_method='tcp://localhost:54321',  # 这里的地址和端口需要根据实际情况进行设置
+        init_method='env://127.0.0.1:12345',  # 这里的地址和端口需要根据实际情况进行设置
         rank=rank,
         world_size=world_size
     )
 
-    print(f"初始化完成分布式训练进程组tcp://localhost:54321：{backend} {rank} {world_size}")
+    print(f"初始化完成分布式训练进程组tcp://localhost:54321：{backend} {rank} {world_size} {datetime.datetime}")
 
     # 加载数据集
     dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
     train_loader = DataLoader(dataset, batch_size=train_config.batch_size, shuffle=True)
 
-    print(f"加载完成数据集,总计{len(dataset)}条数据待训练")
+    print(f"加载完成数据集,总计{len(dataset)}条数据待训练 {datetime.datetime}")
 
     # 设置GPU或CPU
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -115,7 +117,7 @@ def main(train_ytts_config):
     if torch.cuda.device_count() > 1:
         # 使用 DistributedDataParallel 包装模型
         model = DDP(model)
-        print("使用分布式训练")
+        print("使用分布式训练 {datetime.datetime}")
 
     # 创建训练器
     trainer = TextToSpeechTrainer(model, train_loader, None, train_config)
