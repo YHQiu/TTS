@@ -128,7 +128,7 @@ if __name__ == '__main__':
     parser.add_argument('--train_ytts_config', type=str, default="train_ytts_config.json", help='Path to train YTTS configuration JSON file')
     parser.add_argument('--world-size', type=int, default=1)  # 将world-size设置为1
     args = parser.parse_args()
-    world_size = torch.distributed.get_world_size()
+    world_size = torch.cuda.device_count()
     dist.init_process_group(backend='nccl', world_size=world_size)  # 在这里指定world_size
     local_rank = torch.distributed.get_rank()
     print(f"当前GPU {local_rank} {world_size}")
