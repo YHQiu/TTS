@@ -95,7 +95,7 @@ def main(args, local_rank):
 
     # 初始化模型并放置到GPU上
     model = YTTS()  # 替换成你的模型
-    model.to(device)
+    model.to(local_rank)
 
     print(f"加载完成模型{model}")
 
@@ -103,7 +103,7 @@ def main(args, local_rank):
 
     print(f"开始加载分布式模型{local_rank}")
 
-    model = DDP(model, device_ids=[local_rank])
+    model = DDP(model, device_ids=[local_rank], output_device=[local_rank])
 
     print(f"加载完成分布式模型{model}  {local_rank}")
 
