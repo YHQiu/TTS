@@ -110,7 +110,7 @@ class YTTS(nn.Module):
             tokens = tokenizer.tokenize(text)
             text_indices = tokenizer.convert_tokens_to_ids(tokens)
             text_indices = torch.tensor(text_indices)
-            embedded_text = self.embedding(text_indices, device=self.device)
+            embedded_text = self.embedding(text_indices)
             embedded_text = embedded_text * torch.sqrt(torch.tensor(self.d_model, dtype=torch.float, device=self.device))  # Fix this line
             embedded_text = self.positional_encoding(embedded_text)
 
