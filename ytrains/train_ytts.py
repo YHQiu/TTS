@@ -124,7 +124,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # 初始化进程组
-    dist.init_process_group(backend='nccl', init_method='tcp://127.0.0.1',
+    dist.init_process_group(backend='nccl', init_method='tcp://127.0.0.1:12354',
                             world_size=args.world_size, rank=args.local_rank)
 
     main(args.train_ytts_config)
