@@ -85,7 +85,6 @@ def main(args, local_rank):
 
     # 初始化进程组
     print(f"nccl version {torch.cuda.nccl.version()}")
-    dist.init_process_group(backend='nccl')
 
     # 加载数据集
     dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
@@ -129,6 +128,7 @@ if __name__ == '__main__':
     parser.add_argument('--train_ytts_config', type=str, default="train_ytts_config.json", help='Path to train YTTS configuration JSON file')
     parser.add_argument('--world-size', type=int, default=torch.cuda.device_count())
     args = parser.parse_args()
+    dist.init_process_group(backend='nccl')
     local_rank = torch.distributed.get_rank()
     print(f"当前GPU {local_rank}")
     main(args, local_rank)
