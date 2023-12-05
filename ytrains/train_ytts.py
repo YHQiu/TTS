@@ -13,7 +13,7 @@ from dataset import TextToSpeechDataset
 from ytts_model import YTTS
 
 class TextToSpeechTrainer:
-    def __init__(self, model: YTTS, train_loader, val_loader, train_config: TrainConfig):
+    def __init__(self, model, train_loader, val_loader, train_config: TrainConfig):
         self.model = model
         self.train_loader = train_loader
         self.val_loader = val_loader
@@ -99,8 +99,12 @@ def main(args, local_rank):
     model = YTTS()  # 替换成你的模型
     model.to(device)
 
+    print(f"加载完成模型{model}")
+
     # 使用 DistributedDataParallel 包装模型
     model = DDP(model, device_ids=[local_rank])
+
+    print(f"加载完成分布式模型{model} {local_rank}")
 
     # 创建训练器
     trainer = TextToSpeechTrainer(model, train_loader, None, train_config)
