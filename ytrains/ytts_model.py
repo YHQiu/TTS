@@ -61,38 +61,23 @@ class YTTS(nn.Module):
         """
         super(YTTS, self).__init__()
 
-        self.vocab_size = vocab_size
-        self.d_model = d_model
-        self.max_len = max_len
         self.device = device
 
-        self.embedding = nn.Embedding(vocab_size, d_model)
-        self.embedding.to(self.device)
-        self.positional_encoding = PositionalEncoding(d_model, device=self.device, max_len=max_len)
-        self.positional_encoding.to(self.device)
+        self.embedding = nn.Embedding(vocab_size, d_model).to(device)
+        self.positional_encoding = PositionalEncoding(d_model, device=device, max_len=max_len).to(device)
 
-        # Transformer layers
         self.transformer_layers = nn.ModuleList([
-            nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff, device=self.device)
+            nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff).to(device)
             for _ in range(num_layers)
         ])
-        self.transformer_layers.to(self.device)
-
         self.transformer_encoder = nn.TransformerEncoder(
-            nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff, device=self.device),
+            nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff),
             num_layers=num_layers
-        )
-        self.transformer_encoder.to(self.device)
+        ).to(device)
 
-        # Output layer for generating mel-spectrogram
-        self.mel_generation = nn.Linear(d_model, mel_output_size)
-        self.mel_generation.to(self.device)
+        self.mel_generation = nn.Linear(d_model, mel_output_size).to(device)
+        self.hidden_layer = nn.Linear(d_model, d_model).to(device)
 
-        # Adding a hidden layer
-        self.hidden_layer = nn.Linear(d_model, d_model)
-        self.hidden_layer.to(self.device)
-
-        # 将模型移动到对应设备
         self.to(device)
 
     def forward(self, input_sequence):
@@ -104,19 +89,16 @@ class YTTS(nn.Module):
         Returns:
 
         """
-        # 输入是文本列表
         texts = input_sequence
-
-        # List to store mel_outputs
         mel_outputs = []
 
-        # Loop through each text and encode separately
         for text in texts:
             tokens = tokenizer.tokenize(text)
             text_indices = tokenizer.convert_tokens_to_ids(tokens)
-            text_indices = torch.tensor(text_indices)
+            text_indices = torch.tensor(text_indices).to(self.device)
             embedded_text = self.embedding(text_indices)
-            embedded_text = embedded_text * torch.sqrt(torch.tensor(self.d_model, dtype=torch.float, device=self.device))  # Fix this line
+            embedded_text = embedded_text * torch.sqrt(
+                torch.tensor(self.d_model, dtype=torch.float, device=self.device))
             embedded_text = self.positional_encoding(embedded_text)
 
             transformer_output = embedded_text
@@ -142,7 +124,7 @@ class YTTS(nn.Module):
 
         """
         # 将输出和目标列表中的张量拼接成一个张量
-        outputs_combined = torch.cat([output.unsqueeze(0) for output in outputs], dim=0)
+        outputs_combined = torch.cat([output.unsqueeze(0) for output in outputs], dim=0).to(self.device)
         targets_combined = targets
 
         # 应用适当的损失函数
