@@ -83,6 +83,7 @@ def main(args, local_rank):
     print(f"加载完成配置文件 {train_config} {datetime.datetime.now()}")
 
     # 初始化进程组
+    print(f"nccl version {torch.cuda.nccl.version()}")
     dist.init_process_group(backend='nccl', init_method='tcp://127.0.0.1:12354',
                             world_size=args.world_size, rank=local_rank, timeout=datetime.timedelta(seconds=30))
 
