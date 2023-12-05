@@ -86,15 +86,15 @@ def main(train_ytts_config):
     backend = 'nccl'  # 使用的后端，可以是 gloo、nccl 等
 
     # 初始化进程组
-    print(f"正在开始初始化分布式训练进程组 {backend} {rank} {world_size} {datetime.datetime.now()}")
-    dist.init_process_group(
-        backend=backend,
-        init_method='tcp://localhost:54321',  # 这里的地址和端口需要根据实际情况进行设置
-        rank=rank,
-        world_size=world_size
-    )
-
-    print(f"初始化完成分布式训练进程组tcp://localhost:54321：{backend} {rank} {world_size} {datetime.datetime.now()}")
+    # print(f"正在开始初始化分布式训练进程组 {backend} {rank} {world_size} {datetime.datetime.now()}")
+    # dist.init_process_group(
+    #     backend=backend,
+    #     init_method='tcp://localhost:54321',  # 这里的地址和端口需要根据实际情况进行设置
+    #     rank=rank,
+    #     world_size=world_size
+    # )
+    #
+    # print(f"初始化完成分布式训练进程组tcp://localhost:54321：{backend} {rank} {world_size} {datetime.datetime.now()}")
 
     # 加载数据集
     dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
@@ -137,6 +137,8 @@ if __name__ == '__main__':
     parser.add_argument('--train_ytts_config', type=str, default="train_ytts_config.json", help='Path to train YTTS configuration JSON file')
     parser.add_argument('--local-rank', type=int, default=0)
     parser.add_argument('--nproc_per_node', type=int, default=torch.cuda.device_count())
+    parser.add_argument('--backend', type=str, default='nccl')
+    parser.add_argument('--world-size', type=int, default=torch.cuda.device_count())
     args = parser.parse_args()
 
     main(args.train_ytts_config)
