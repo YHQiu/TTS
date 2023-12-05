@@ -39,9 +39,8 @@ def main(args, local_rank):
 
     print(f"加载完成数据集,总计{len(dataset)}条数据待训练 {datetime.datetime.now()}")
 
-    # 初始化模型并放置到GPU上
-    model = YTTS()  # 替换成你的模型
-    model.to(local_rank)
+    # 初始化模型并放置到对应设备上
+    model = YTTS(device=local_rank)
 
     print(f"加载完成模型{model}")
 

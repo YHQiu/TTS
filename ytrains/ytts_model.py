@@ -38,9 +38,12 @@ class PositionalEncoding(nn.Module):
         return x + encoding.detach()
 
 class YTTS(nn.Module):
-    def __init__(self, vocab_size=30522, d_model=768, num_layers=6, num_heads=8, d_ff=2048, max_len=4096, mel_output_size=80):
+    def __init__(self, device, vocab_size=30522, d_model=768, num_layers=6, num_heads=8, d_ff=2048, max_len=4096, mel_output_size=80):
         """
         Args:
+
+            device: 模型训练设备
+
             vocab_size: 这是用于模型的输入的词汇表大小。它表示模型能够处理的不同token的数量。在文本到语音的任务中，这个参数决定了模型能够处理的文本的多样性程度。
 
             d_model: 这个参数表示Transformer模型的embedding维度或者隐藏单元的数量。在模型中，它决定了token的表示维度。较大的d_model能够捕捉更多的复杂特征，但也会增加模型的计算成本。
@@ -60,6 +63,7 @@ class YTTS(nn.Module):
         self.vocab_size = vocab_size
         self.d_model = d_model
         self.max_len = max_len
+        self.device = device
 
         self.embedding = nn.Embedding(vocab_size, d_model)
         self.positional_encoding = PositionalEncoding(d_model, max_len=max_len)
@@ -80,6 +84,9 @@ class YTTS(nn.Module):
         # Adding a hidden layer
         self.hidden_layer = nn.Linear(d_model, d_model)
 
+        # 将模型移动到对应设备
+        self.to(device)
+
     def forward(self, input_sequence):
         # 输入是文本列表
         texts = input_sequence
@@ -93,7 +100,7 @@ class YTTS(nn.Module):
             text_indices = tokenizer.convert_tokens_to_ids(tokens)
             text_indices = torch.tensor(text_indices)
             embedded_text = self.embedding(text_indices)
-            embedded_text = embedded_text * torch.sqrt(torch.tensor(self.d_model, dtype=torch.float))  # Fix this line
+            embedded_text = embedded_text * torch.sqrt(torch.tensor(self.d_model, dtype=torch.float, device=self.device))  # Fix this line
             embedded_text = self.positional_encoding(embedded_text)
 
             transformer_output = embedded_text
