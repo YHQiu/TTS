@@ -3,12 +3,15 @@ import json
 import torch
 import os
 from torch.utils.data import DataLoader
+from torch.nn.parallel import DistributedDataParallel as DDP
+import torch.distributed as dist
+
 from train_config import TrainConfig
 from dataset import TextToSpeechDataset
 from ytrains.trainer import TextToSpeechTrainer
 from ytts_model import YTTS
 
-def main(args):
+def main(args, local_rank):
     # 设置GPU或CPU
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"PyTorch 版本: {torch.__version__}")
@@ -38,9 +41,16 @@ def main(args):
 
     # 初始化模型并放置到GPU上
     model = YTTS()  # 替换成你的模型
-    model.to(device)
+    model.to(local_rank)
 
     print(f"加载完成模型{model}")
+
+    # 使用 DistributedDataParallel 包装模型
+    if args.nproc_per_node > 1:
+        print(f"开始加载分布式模型 设备ID {local_rank}")
+        # model = DDP(model, device_ids=[local_rank], output_device=[local_rank])
+        model = DDP(model, device_ids=[local_rank])
+        print(f"加载完成分布式模型{model} 设备ID {local_rank}")
 
     # 创建训练器
     trainer = TextToSpeechTrainer(model, train_loader, None, train_config)
@@ -58,7 +68,14 @@ def main(args):
 
 if __name__ == '__main__':
     import argparse
+
     parser = argparse.ArgumentParser(description='Train Text-to-Speech Model')
     parser.add_argument('--train_ytts_config', type=str, default="train_ytts_config.json", help='Path to train YTTS configuration JSON file')
+    parser.add_argument('--world-size', type=int, default=1)  # 将world-size设置为1
+    parser.add_argument('--nproc_per_node', type=int, help='必须指定--nproc_per_node 使用多少个GPU进行训练')
     args = parser.parse_args()
-    main(args)
+    world_size = torch.cuda.device_count()
+    dist.init_process_group(backend='nccl', world_size=world_size)  # 在这里指定world_size
+    local_rank = torch.distributed.get_rank()
+    print(f"当前GPU {local_rank} {world_size}")
+    main(args, local_rank)
