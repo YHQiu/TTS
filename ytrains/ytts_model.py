@@ -76,16 +76,21 @@ class YTTS(nn.Module):
             nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff, device=self.device)
             for _ in range(num_layers)
         ])
+        self.transformer_layers.to(self.device)
+
         self.transformer_encoder = nn.TransformerEncoder(
             nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff, device=self.device),
             num_layers=num_layers
         )
+        self.transformer_encoder.to(self.device)
 
         # Output layer for generating mel-spectrogram
         self.mel_generation = nn.Linear(d_model, mel_output_size)
+        self.mel_generation.to(self.device)
 
         # Adding a hidden layer
         self.hidden_layer = nn.Linear(d_model, d_model)
+        self.hidden_layer.to(self.device)
 
         # 将模型移动到对应设备
         self.to(device)
