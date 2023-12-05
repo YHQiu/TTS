@@ -84,7 +84,7 @@ def main(args, local_rank):
 
     # 初始化进程组
     dist.init_process_group(backend='nccl', init_method='tcp://127.0.0.1:12354',
-                            world_size=args.world_size, rank=local_rank)
+                            world_size=args.world_size, rank=local_rank, timeout=datetime.timedelta(seconds=30))
 
     # 加载数据集
     dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
