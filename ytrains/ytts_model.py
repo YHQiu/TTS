@@ -93,9 +93,9 @@ class YTTS(nn.Module):
         batch_size = len(texts)
 
         # 初始化模型输出为全零张量，使用实际生成的最大长度
-        mel_outputs = torch.zeros(batch_size, max_seq_len, self.mel_output_size).to(self.device)
+        mel_outputs = []
 
-        for i, text in enumerate(texts):
+        for text in texts:
             tokens = tokenizer.tokenize(text)
             text_indices = tokenizer.convert_tokens_to_ids(tokens)
             text_indices = torch.tensor(text_indices).to(self.device)
@@ -112,8 +112,17 @@ class YTTS(nn.Module):
             hidden_output = self.hidden_layer(encoded)
             mel_output = self.mel_generation(hidden_output)
 
-            # 将当前 mel_output 调整为与目标相同形状并填充到 mel_outputs 中
-            mel_outputs[i, :mel_output.size(1), :] = mel_output
+            # 对 mel_output 进行填充或裁剪，使其长度与最大长度相同
+            if mel_output.size(1) < max_seq_len:
+                pad = torch.zeros(batch_size, max_seq_len - mel_output.size(1), self.mel_output_size).to(self.device)
+                mel_output = torch.cat([mel_output, pad], dim=1)
+            elif mel_output.size(1) > max_seq_len:
+                mel_output = mel_output[:, :max_seq_len, :]
+
+            mel_outputs.append(mel_output)
+
+        # 将 mel_outputs 合并成一个张量
+        mel_outputs = torch.stack(mel_outputs, dim=0)
 
         return mel_outputs
 
