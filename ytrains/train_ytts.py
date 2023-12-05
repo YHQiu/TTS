@@ -89,7 +89,7 @@ def main(train_ytts_config):
     print(f"正在开始初始化完成分布式训练进程组 {backend} {rank} {world_size} {datetime.datetime}")
     dist.init_process_group(
         backend=backend,
-        init_method='env://',  # 这里的地址和端口需要根据实际情况进行设置
+        init_method='tcp://localhost:54321',  # 这里的地址和端口需要根据实际情况进行设置
         rank=rank,
         world_size=world_size
     )
