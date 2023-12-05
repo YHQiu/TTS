@@ -108,13 +108,17 @@ def main(args, local_rank):
 
     # 创建训练器
     trainer = TextToSpeechTrainer(model, train_loader, None, train_config)
+    print(f"创建完成训练器 {trainer}")
 
     # 执行训练
+    print(f"开始训练 {datetime.datetime.now()}")
     trainer.train()
+    print(f"结束训练 {datetime.datetime.now()}")
 
     # 保存模型
     model_path = os.path.join(train_config.outputs, 'model.pth')
     trainer.save_model(model_path)
+    print(f"保存模型 {model_path} {datetime.datetime.now()}")
 
 if __name__ == '__main__':
     import argparse
