@@ -86,10 +86,10 @@ def main(train_ytts_config):
     backend = 'nccl'  # 使用的后端，可以是 gloo、nccl 等
 
     # 初始化进程组
-    print(f"正在开始初始化完成分布式训练进程组{backend} {rank} {datetime.datetime}")
+    print(f"正在开始初始化完成分布式训练进程组 {backend} {rank} {world_size} {datetime.datetime}")
     dist.init_process_group(
         backend=backend,
-        init_method='env://127.0.0.1:12345',  # 这里的地址和端口需要根据实际情况进行设置
+        init_method='env://',  # 这里的地址和端口需要根据实际情况进行设置
         rank=rank,
         world_size=world_size
     )
