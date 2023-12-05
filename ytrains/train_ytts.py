@@ -85,6 +85,7 @@ def main(args, local_rank):
 
     # 初始化进程组
     print(f"nccl version {torch.cuda.nccl.version()}")
+    dist.init_process_group(backend='nccl')
 
     # 加载数据集
     dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
@@ -129,9 +130,5 @@ if __name__ == '__main__':
     parser.add_argument('--local_rank', type=int, default=0)
     parser.add_argument('--world-size', type=int, default=torch.cuda.device_count())
     args = parser.parse_args()
-
-    if args.local_rank == 0:
-        dist.init_process_group(backend='nccl', init_method='tcp://127.0.0.1:12354',
-                            world_size=args.world_size, rank=args.local_rank, timeout=datetime.timedelta(seconds=30))
 
     main(args, args.local_rank)
