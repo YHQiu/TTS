@@ -135,7 +135,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Train Text-to-Speech Model')
     parser.add_argument('--train_ytts_config', type=str, default="train_ytts_config.json", help='Path to train YTTS configuration JSON file')
-    parser.add_argument('--local-rank', default=54321)
+    parser.add_argument('--local-rank', default=0)
     parser.add_argument('--nproc_per_node', default=torch.cuda.device_count())
     args = parser.parse_args()
 
