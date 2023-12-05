@@ -5,7 +5,7 @@ import os
 from torch.utils.data import DataLoader
 from train_config import TrainConfig
 from dataset import TextToSpeechDataset
-from ytrains.trainer import TextToSpeechTrainer
+from ytrainer import TextToSpeechTrainer
 from ytts_model import YTTS
 
 def main(args):

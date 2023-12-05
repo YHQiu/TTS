@@ -1,7 +1,7 @@
 import torch
 import torch.optim as optim
 
-from ytrains.train_config import TrainConfig
+from train_config import TrainConfig
 
 class TextToSpeechTrainer:
     def __init__(self, model, train_loader, val_loader, train_config: TrainConfig):
