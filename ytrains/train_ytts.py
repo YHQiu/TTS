@@ -69,6 +69,14 @@ class TextToSpeechTrainer:
         self.model.load_state_dict(torch.load(path))
 
 def main(train_ytts_config):
+    # 设置GPU或CPU
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    if device == 'cuda':
+        print("use cuda")
+    else:
+        print("use cpu")
+
     # 从命令行传入 train_ytts_config 训练配置文件
     with open(train_ytts_config, 'r') as f:
         config_data = json.load(f)
@@ -79,35 +87,11 @@ def main(train_ytts_config):
 
     print(f"加载完成配置文件{train_config} {datetime.datetime.now()}")
 
-    # 设置分布式训练参数
-    # 这些参数可以根据你的具体需求进行修改
-    rank = args.local_rank  # 当前进程的排名
-    world_size = torch.cuda.device_count()  # 获取可用的 GPU 数量
-    backend = 'nccl'  # 使用的后端，可以是 gloo、nccl 等
-
-    # 初始化进程组
-    # print(f"正在开始初始化分布式训练进程组 {backend} {rank} {world_size} {datetime.datetime.now()}")
-    # dist.init_process_group(
-    #     backend=backend,
-    #     init_method='tcp://localhost:54321',  # 这里的地址和端口需要根据实际情况进行设置
-    #     rank=rank,
-    #     world_size=world_size
-    # )
-    #
-    # print(f"初始化完成分布式训练进程组tcp://localhost:54321：{backend} {rank} {world_size} {datetime.datetime.now()}")
-
     # 加载数据集
     dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
     train_loader = DataLoader(dataset, batch_size=train_config.batch_size, shuffle=True)
 
     print(f"加载完成数据集,总计{len(dataset)}条数据待训练 {datetime.datetime.now()}")
-
-    # 设置GPU或CPU
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    if device == 'cuda':
-        print("use cuda")
-    else:
-        print("use cpu")
 
     # 初始化模型并放置到GPU上
     model = YTTS()  # 替换成你的模型
