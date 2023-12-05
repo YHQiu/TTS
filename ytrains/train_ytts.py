@@ -71,6 +71,8 @@ class TextToSpeechTrainer:
 def main(train_ytts_config):
     # 设置GPU或CPU
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"PyTorch 版本: {torch.__version__}")
+    print(f"CUDA 版本 {torch.version.cuda}")
     print(f"use {device}")
 
     # 从命令行传入 train_ytts_config 训练配置文件
