@@ -88,18 +88,14 @@ class YTTS(nn.Module):
         self.to(device)
 
     def forward(self, input_sequence):
-        """
-        回归
-        Args:
-            input_sequence:
-
-        Returns:
-
-        """
         texts = input_sequence
-        mel_outputs = []
+        max_seq_len = max(len(tokenizer.tokenize(text)) for text in texts)  # 获取最大的序列长度
+        batch_size = len(texts)
 
-        for text in texts:
+        # 初始化模型输出为全零张量
+        mel_outputs = torch.zeros(batch_size, self.max_len, self.mel_output_size).to(self.device)
+
+        for i, text in enumerate(texts):
             tokens = tokenizer.tokenize(text)
             text_indices = tokenizer.convert_tokens_to_ids(tokens)
             text_indices = torch.tensor(text_indices).to(self.device)
@@ -116,26 +112,12 @@ class YTTS(nn.Module):
             hidden_output = self.hidden_layer(encoded)
             mel_output = self.mel_generation(hidden_output)
 
-            mel_outputs.append(mel_output)
+            # 将当前 mel_output 调整为与目标相同形状并填充到 mel_outputs 中
+            mel_outputs[i, :mel_output.size(1), :] = mel_output
 
         return mel_outputs
 
     def criterion(self, outputs, targets):
-        """
-        计算损失
-        Args:
-            outputs:
-            targets:
-
-        Returns:
-
-        """
-        # 将输出和目标列表中的张量拼接成一个张量
-        outputs_combined = torch.cat([output.unsqueeze(0) for output in outputs], dim=0).to(self.device)
-        targets_combined = targets
-
-        # 应用适当的损失函数
         loss_function = nn.MSELoss()
-        # 计算损失
-        loss = loss_function(outputs_combined, targets_combined)
+        loss = loss_function(outputs, targets)
         return loss

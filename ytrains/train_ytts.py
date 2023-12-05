@@ -26,9 +26,6 @@ def main(args):
 
     print(f"加载完成配置文件 {train_config} {datetime.datetime.now()}")
 
-    # 初始化进程组
-    print(f"nccl version {torch.cuda.nccl.version()}")
-
     # 加载数据集
     dataset = TextToSpeechDataset(data_config['metadata'], data_config['wavs'])
     train_sampler = SequentialSampler(dataset)
