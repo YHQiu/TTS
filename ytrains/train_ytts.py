@@ -28,17 +28,22 @@ class TextToSpeechTrainer:
     def train(self):
         print("开始训练")
         for epoch in range(self.num_epochs):
-            print(f"开始训练 epoch={epoch}")
+            print(f"训练 epoch={epoch}")
             self.model.train()
             total_loss = 0.0
 
             for inputs, targets in self.train_loader:
+                print(f"训练 epoch={epoch} 归一化")
                 self.optimizer.zero_grad()
+                print(f"训练 epoch={epoch} 模型执行")
                 outputs = self.model(inputs)
+                print(f"训练 epoch={epoch} loss计算")
                 loss = self.model.criterion(outputs, targets)
+                print(f"训练 epoch={epoch} loss回归")
                 loss.backward()
+                print(f"训练 epoch={epoch} 优化器执行")
                 self.optimizer.step()
-
+                print(f"训练 epoch={epoch} 损失汇总")
                 total_loss += loss.item()
 
             print(f"Epoch {epoch + 1}/{self.num_epochs}, Loss: {total_loss / len(self.train_loader)}")
