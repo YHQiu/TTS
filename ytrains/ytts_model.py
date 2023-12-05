@@ -62,6 +62,13 @@ class YTTS(nn.Module):
         super(YTTS, self).__init__()
 
         self.device = device
+        self.vocab_size = vocab_size
+        self.d_model = d_model
+        self.mum_layers = num_layers
+        self.num_heads = num_heads
+        self.d_ff = d_ff
+        self.max_len = max_len
+        self.mel_output_size = mel_output_size
 
         self.embedding = nn.Embedding(vocab_size, d_model).to(device)
         self.positional_encoding = PositionalEncoding(d_model, device=device, max_len=max_len).to(device)
