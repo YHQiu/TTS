@@ -25,7 +25,7 @@ class TextToSpeechTrainer:
 
             for inputs, targets in self.train_loader:
                 print(f"训练 epoch={epoch} 归一化")
-                print(f"目标", targets)
+                print(f"目标", targets.shape())
                 self.optimizer.zero_grad()
                 print(f"训练 epoch={epoch} 模型执行")
                 outputs = self.model(inputs)
