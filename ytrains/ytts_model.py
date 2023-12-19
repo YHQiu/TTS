@@ -39,6 +39,12 @@ class PositionalEncoding(nn.Module):
         return x + encoding.detach().to(self.device)
 
 class YTTS(nn.Module):
+    """
+    输入
+    (text_embedding)
+    输出
+    (通道数, 频谱特征维度, 时间步数)
+    """
     def __init__(self, device, vocab_size=30522, d_model=768, num_layers=6, num_heads=8, d_ff=2048, max_len=512, mel_max_len=512):
         """
         Args:
@@ -73,17 +79,18 @@ class YTTS(nn.Module):
         self.embedding = nn.Embedding(vocab_size, d_model).to(device)
         self.positional_encoding = PositionalEncoding(d_model, device=device, max_len=max_len).to(device)
 
-        self.transformer_layers = nn.ModuleList([
-            nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff).to(device)
-            for _ in range(num_layers)
-        ])
         self.transformer_encoder = nn.TransformerEncoder(
             nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff),
             num_layers=num_layers
         ).to(device)
 
-        self.mel_generation = nn.Linear(d_model, mel_max_len).to(device)
-        self.hidden_layer = nn.Linear(d_model, d_model).to(device)
+        self.transformer_layers = nn.ModuleList([
+            nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dim_feedforward=d_ff).to(device)
+            for _ in range(num_layers)
+        ])
+
+        self.hidden_layer = nn.Linear(d_model, mel_max_len).to(device)
+        self.mel_generation = nn.Linear(mel_max_len, mel_max_len).to(device)
 
         self.to(device)
 
@@ -98,23 +105,23 @@ class YTTS(nn.Module):
             tokens = tokenizer.tokenize(text)
             text_indices = tokenizer.convert_tokens_to_ids(tokens)
             text_indices = torch.tensor(text_indices).to(self.device)
-            embedded_text = self.embedding(text_indices)
-            embedded_text = embedded_text * torch.sqrt(
+            embedded_text_token = self.embedding(text_indices)
+            embedded_text_tensor = embedded_text_token * torch.sqrt(
                 torch.tensor(self.d_model, dtype=torch.float, device=self.device))
-            embedded_text = self.positional_encoding(embedded_text)
+            positional_encoding = self.positional_encoding(embedded_text_tensor)
+            encoded = self.transformer_encoder(positional_encoding)
 
-            transformer_output = embedded_text
+            transformer_output = encoded
             for layer in self.transformer_layers:
                 transformer_output = layer(transformer_output)
 
-            encoded = self.transformer_encoder(transformer_output)
             hidden_output = self.hidden_layer(encoded)
 
             # 频谱输出
             mel_output = self.mel_generation(hidden_output)
-
+            mel_output = mel_output.unsqueeze(0)
             # 调整输出形状以匹配预期形状 (通道数, 频谱特征维度, 时间步数)
-            mel_output = mel_output.permute(0, 2, 1).contiguous()  # 调整维度顺序
+            # TODO 将mel_output = Tensor(512,512) 调整为 mel_output = Tensor(1,512,512)
 
             mel_outputs.append(mel_output)
 
@@ -127,3 +134,36 @@ class YTTS(nn.Module):
         loss_function = nn.MSELoss()
         loss = loss_function(outputs, targets)
         return loss
+
+def main():
+    # Set up device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Create an instance of YTTS
+    model = YTTS(device=device)
+    model.to(device)
+
+    # Define some dummy input text sequences
+    input_sequences = [
+        "This is a text sentence.",
+        "This is another text sentence"
+    ]
+
+    # Convert input text sequences to tensors
+    # input_tensors = [torch.tensor([model.tokenizer.encode(text, add_special_tokens=True)]) for text in input_sequences]
+
+    # Forward pass through the model
+    outputs = model(input_sequences)
+
+    # Dummy targets for testing criterion
+    targets = torch.randn(outputs.size())
+
+    # Calculate loss using criterion
+    loss = model.criterion(outputs, targets)
+
+    # Print shapes of output and loss
+    print(f"Output shapes: {outputs.shape}")
+    print(f"Loss: {loss.item()}")
+
+if __name__ == "__main__":
+    main()
