@@ -219,6 +219,10 @@ def train_model(train_config):
     # init the model from config
     model = GPTTrainer.init_from_config(config)
 
+    restore_path = os.path.join(OUT_PATH, "restore")
+    if not os.path.exists(restore_path):
+        os.makedirs(restore_path)
+
     # init the trainer and 🚀
     trainer = Trainer(
         TrainerArgs(
