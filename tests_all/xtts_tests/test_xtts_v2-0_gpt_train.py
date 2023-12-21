@@ -226,7 +226,7 @@ def train_model(train_config):
     # init the trainer and 🚀
     trainer = Trainer(
         TrainerArgs(
-            restore_path=os.path.join(OUT_PATH, "restore"),  # xtts checkpoint is restored via xtts_checkpoint key so no need of restore it using Trainer restore_path parameter
+            restore_path=None,  # xtts checkpoint is restored via xtts_checkpoint key so no need of restore it using Trainer restore_path parameter
             skip_train_epoch=False,
             start_with_eval=START_WITH_EVAL,
             grad_accum_steps=GRAD_ACUMM_STEPS,
