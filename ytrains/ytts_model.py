@@ -45,7 +45,7 @@ class YTTS(nn.Module):
     输出
     (通道数, 频谱特征维度, 时间步数)
     """
-    def __init__(self, device, vocab_size=30522, d_model=768, num_layers=6, num_heads=8, d_ff=2048, max_len=512, mel_max_len=512):
+    def __init__(self, device, vocab_size=30522, d_model=768, num_layers=6, num_heads=8, d_ff=2048, max_len=512, mel_max_len=128, timestep_max_len=512):
         """
         Args:
 
@@ -75,6 +75,7 @@ class YTTS(nn.Module):
         self.d_ff = d_ff
         self.max_len = max_len
         self.mel_max_len = mel_max_len
+        self.timestep_max_len = timestep_max_len
 
         self.embedding = nn.Embedding(vocab_size, d_model).to(device)
         self.positional_encoding = PositionalEncoding(d_model, device=device, max_len=max_len).to(device)
@@ -89,12 +90,21 @@ class YTTS(nn.Module):
             for _ in range(num_layers)
         ])
 
-        self.hidden_layer = nn.Linear(d_model, mel_max_len).to(device)
-        self.mel_generation = nn.Linear(mel_max_len, mel_max_len).to(device)
+        self.hidden_layer = nn.Linear(d_model, timestep_max_len).to(device)
+        self.mel_generation = nn.Linear(d_model, timestep_max_len).to(device)
 
         self.to(device)
 
     def forward(self, input_sequence):
+
+        """
+        通过模型的各层输出mel_output = Tensor(128,512) 最后调整为 mel_output = Tensor(1,128,512)
+        Args:
+            input_sequence:
+
+        Returns:
+
+        """
 
         texts = input_sequence
 
@@ -115,13 +125,18 @@ class YTTS(nn.Module):
             for layer in self.transformer_layers:
                 transformer_output = layer(transformer_output)
 
-            hidden_output = self.hidden_layer(encoded)
+            # 将 Transformer 的输出传递到线性层并重塑
+            transformer_output = transformer_output.view(-1, self.d_model)  # 调整尺寸以匹配线性层
 
-            # 频谱输出
-            mel_output = self.mel_generation(hidden_output)
-            mel_output = mel_output.unsqueeze(0)
-            # 调整输出形状以匹配预期形状 (通道数, 频谱特征维度, 时间步数)
-            # TODO 将mel_output = Tensor(512,512) 调整为 mel_output = Tensor(1,512,512)
+            # 隐藏层输出
+            mel_output = self.hidden_layer(transformer_output)  # 可以考虑是否需要这一层
+
+            # 重塑输出以匹配目标Tensor的维度
+            mel_output = mel_output.view(-1, 1, self.timestep_max_len, self.mel_max_len)  # 重塑以匹配 (batch_size, 1, 128, 512)
+
+            mel_outputs.append(mel_output)
+
+            print(mel_output.shape)  # 添加另一个打印语句以检查调整后的形状
 
             mel_outputs.append(mel_output)
 
