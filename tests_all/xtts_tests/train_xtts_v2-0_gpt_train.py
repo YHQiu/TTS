@@ -21,6 +21,7 @@ def train_model(rank, train_config, world_size):
 
     XTTS_CHECKPOINT = train_config.get("XTTS_CHECKPOINT")
     LANGUAGE_BASE = train_config.get("LANGUAGE_BASE")
+    VOCAB_JSON_FILE = train_config.get("VOCAB_JSON_FILE")
     # Training Parameters
     EPOCHS = train_config.get("EPOCHS")
     OPTIMIZER_WD_ONLY_ON_WEIGHTS = train_config.get("OPTIMIZER_WD_ONLY_ON_WEIGHTS") # for multi-gpu training please make it False
@@ -120,9 +121,8 @@ def train_model(rank, train_config, world_size):
     mel_stats = torch.ones(80)
     torch.save(mel_stats, MEL_NORM_FILE)
 
-
     # XTTS transfer learning parameters: You we need to provide the paths of XTTS model checkpoint that you want to do the fine tuning.
-    TOKENIZER_FILE = f"vocab.json"  # vocab.json file
+    TOKENIZER_FILE = VOCAB_JSON_FILE
 
     LANGUAGE = config_dataset.language
 

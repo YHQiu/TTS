@@ -1,5 +1,6 @@
 {
     "XTTS_CHECKPOINT": "/data/model/xtts/default_model/tts_models--multilingual--multi-dataset--xtts_v2-1/model.pth",
+    "VOCAB_JSON_FILE": "/data/model/xtts/default_model/tts_models--multilingual--multi-dataset--xtts_v2-1/vocab.json",
     "LANGUAGE_BASE": "zh-cn",
     "EPOCHS": 2,
     "OPTIMIZER_WD_ONLY_ON_WEIGHTS": true,
