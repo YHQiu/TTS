@@ -132,7 +132,7 @@ class YTTS(nn.Module):
             mel_output = self.hidden_layer(transformer_output)  # 可以考虑是否需要这一层
 
             # 重塑输出以匹配目标Tensor的维度
-            mel_output = mel_output.view(-1, 1, self.timestep_max_len, self.mel_max_len)  # 重塑以匹配 (batch_size, 1, 128, 512)
+            mel_output = mel_output.view(1, self.timestep_max_len, self.mel_max_len)  # 重塑以匹配 (batch_size, 1, 128, 512)
 
             mel_outputs.append(mel_output)
 
